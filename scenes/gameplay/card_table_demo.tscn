@@ -1,0 +1,70 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/card_table_demo.gd" id="1_demo"]
+
+[node name="CardTableDemo" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_demo")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Layout" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="OpponentLabel" type="Label" parent="Margin/Layout"]
+layout_mode = 2
+text = "Opponent (face down)"
+
+[node name="OpponentRow" type="HBoxContainer" parent="Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Spacer" type="Control" parent="Margin/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlayerLabel" type="Label" parent="Margin/Layout"]
+layout_mode = 2
+text = "Player"
+
+[node name="PlayerRow" type="HBoxContainer" parent="Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="InfoLabel" type="Label" parent="Margin/Layout"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="Buttons" type="HBoxContainer" parent="Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="DealButton" type="Button" parent="Margin/Layout/Buttons"]
+layout_mode = 2
+text = "Reshuffle and Deal"
+
+[node name="BackButton" type="Button" parent="Margin/Layout/Buttons"]
+layout_mode = 2
+text = "Back"
+
+[connection signal="pressed" from="Margin/Layout/Buttons/DealButton" to="." method="_on_deal_button_pressed"]
+[connection signal="pressed" from="Margin/Layout/Buttons/BackButton" to="." method="_on_back_button_pressed"]

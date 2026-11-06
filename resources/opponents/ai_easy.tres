@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AIProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/ai_profile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+id = "easy"
+display_name = "Easy"
+cut_samples = 0
+crib_samples = 0
+crib_weight = 0.0
+mistake_chance = 0.25
+pegging_lookahead = false
+pegging_defense = 0.0

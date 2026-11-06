@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="RunConfig" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/run/run_config.gd" id="1_cfg"]
+[ext_resource type="Script" path="res://scripts/encounters/encounter_data.gd" id="2_data"]
+[ext_resource type="Resource" path="res://resources/run/template_casual.tres" id="3_casual"]
+[ext_resource type="Resource" path="res://resources/run/template_regular.tres" id="4_regular"]
+[ext_resource type="Resource" path="res://resources/run/template_boss_dealer.tres" id="5_dealer"]
+[ext_resource type="Resource" path="res://resources/run/template_boss_shark.tres" id="6_shark"]
+[ext_resource type="Script" path="res://scripts/ai/ai_profile.gd" id="7_prof"]
+[ext_resource type="Resource" path="res://resources/opponents/ai_easy.tres" id="8_easy"]
+[ext_resource type="Resource" path="res://resources/opponents/ai_normal.tres" id="9_normal"]
+[ext_resource type="Resource" path="res://resources/opponents/ai_hard.tres" id="10_hard"]
+
+[resource]
+script = ExtResource("1_cfg")
+stage_count = 10
+starting_currency = 0
+regular_options = 2
+min_encounters_per_stage = 2
+regular_templates = Array[ExtResource("2_data")]([ExtResource("3_casual"), ExtResource("4_regular")])
+boss_templates = Array[ExtResource("2_data")]([ExtResource("5_dealer"), ExtResource("6_shark")])
+profiles = Array[ExtResource("7_prof")]([ExtResource("8_easy"), ExtResource("9_normal"), ExtResource("10_hard")])
+target_growth = 3
+reward_growth = 1
+retry_cost_growth = 1

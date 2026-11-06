@@ -1,0 +1,157 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/round_demo.gd" id="1_round"]
+
+[node name="RoundDemo" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_round")
+
+[node name="Root" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="LogPanel" type="PanelContainer" parent="Root"]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+
+[node name="LogBox" type="VBoxContainer" parent="Root/LogPanel"]
+layout_mode = 2
+
+[node name="LogTitle" type="Label" parent="Root/LogPanel/LogBox"]
+layout_mode = 2
+text = "Game Log"
+horizontal_alignment = 1
+
+[node name="LogLabel" type="RichTextLabel" parent="Root/LogPanel/LogBox"]
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+scroll_following = true
+
+[node name="Margin" type="MarginContainer" parent="Root"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 12
+
+[node name="Layout" type="VBoxContainer" parent="Root/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="OpponentArea" type="HBoxContainer" parent="Root/Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="OpponentScore" type="Label" parent="Root/Margin/Layout/OpponentArea"]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+
+[node name="OpponentRow" type="HBoxContainer" parent="Root/Margin/Layout/OpponentArea"]
+custom_minimum_size = Vector2(0, 132)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="OpponentCribBox" type="VBoxContainer" parent="Root/Margin/Layout/OpponentArea"]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+
+[node name="OpponentCribLabel" type="Label" parent="Root/Margin/Layout/OpponentArea/OpponentCribBox"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="OpponentCribRow" type="HBoxContainer" parent="Root/Margin/Layout/OpponentArea/OpponentCribBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="MiddleRow" type="HBoxContainer" parent="Root/Margin/Layout"]
+layout_mode = 2
+alignment = 1
+
+[node name="CutBox" type="VBoxContainer" parent="Root/Margin/Layout/MiddleRow"]
+layout_mode = 2
+
+[node name="CutLabel" type="Label" parent="Root/Margin/Layout/MiddleRow/CutBox"]
+layout_mode = 2
+text = "Cut"
+horizontal_alignment = 1
+
+[node name="CutRow" type="HBoxContainer" parent="Root/Margin/Layout/MiddleRow/CutBox"]
+custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
+theme_override_constants/separation = 1
+alignment = 1
+
+[node name="PileLabel" type="Label" parent="Root/Margin/Layout"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="PileRow" type="HBoxContainer" parent="Root/Margin/Layout"]
+custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="PlayerArea" type="HBoxContainer" parent="Root/Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PlayerScore" type="Label" parent="Root/Margin/Layout/PlayerArea"]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+
+[node name="PlayerRow" type="HBoxContainer" parent="Root/Margin/Layout/PlayerArea"]
+custom_minimum_size = Vector2(0, 132)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="PlayerCribBox" type="VBoxContainer" parent="Root/Margin/Layout/PlayerArea"]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+
+[node name="PlayerCribLabel" type="Label" parent="Root/Margin/Layout/PlayerArea/PlayerCribBox"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="PlayerCribRow" type="HBoxContainer" parent="Root/Margin/Layout/PlayerArea/PlayerCribBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="StatusLabel" type="Label" parent="Root/Margin/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Buttons" type="HBoxContainer" parent="Root/Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="ActionButton" type="Button" parent="Root/Margin/Layout/Buttons"]
+layout_mode = 2
+text = "Discard to Crib"
+
+[node name="BackButton" type="Button" parent="Root/Margin/Layout/Buttons"]
+layout_mode = 2
+text = "Back"
+
+[connection signal="pressed" from="Root/Margin/Layout/Buttons/ActionButton" to="." method="_on_action_button_pressed"]
+[connection signal="pressed" from="Root/Margin/Layout/Buttons/BackButton" to="." method="_on_back_button_pressed"]
