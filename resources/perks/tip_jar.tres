@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PerkData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/perks/perk_data.gd" id="1_perk"]
+
+[resource]
+script = ExtResource("1_perk")
+id = "tip_jar"
+display_name = "Tip Jar"
+description = "Earn +2 currency for every encounter you win."
+base_price = 6
+starter = true
+effect = 3
+amount = 2

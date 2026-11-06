@@ -42,14 +42,30 @@ var round_banked := false
 var hand_pegging := {CribbageRound.PLAYER_ID: 0, CribbageRound.OPPONENT_ID: 0}
 var banner: Label
 var banner_tween: Tween
+# Set before adding the scene to the tree to play an encounter owned by a run.
+var embedded := false
+
+signal encounter_finished
 
 
 func _ready() -> void:
+	log_label.selection_enabled = true
+	log_label.context_menu_enabled = true
 	_build_banner()
-	ai = OpponentAI.new(ENCOUNTER_DATA.opponent_profile)
-	player_deck = DeckScript.new(CribbageRound.PLAYER_ID)
-	opponent_deck = DeckScript.new(CribbageRound.OPPONENT_ID)
-	encounter = Encounter.new(ENCOUNTER_DATA, player_deck, opponent_deck)
+	if encounter != null:
+		# Embedded in a run: the run owns the encounter and decides what happens when it ends.
+		embedded = true
+		var background := ColorRect.new()
+		background.color = Color("2b2f33")
+		background.set_anchors_preset(Control.PRESET_FULL_RECT)
+		add_child(background)
+		move_child(background, 0)
+		ai = OpponentAI.new(encounter.data.opponent_profile)
+	else:
+		ai = OpponentAI.new(ENCOUNTER_DATA.opponent_profile)
+		player_deck = DeckScript.new(CribbageRound.PLAYER_ID)
+		opponent_deck = DeckScript.new(CribbageRound.OPPONENT_ID)
+		encounter = Encounter.new(ENCOUNTER_DATA, player_deck, opponent_deck)
 	_start_round()
 
 
@@ -92,7 +108,7 @@ func _start_round() -> void:
 	round_banked = false
 	cutting = false
 	hand_pegging = {CribbageRound.PLAYER_ID: 0, CribbageRound.OPPONENT_ID: 0}
-	var hand_text := "Sudden death" if encounter.in_sudden_death else "Hand %d/%d" % [encounter.hands_played + 1, ENCOUNTER_DATA.hand_limit]
+	var hand_text := "Sudden death" if encounter.in_sudden_death else "Hand %d/%d" % [encounter.hands_played + 1, encounter.hand_limit()]
 	_log("\n[b][color=gold]===== %s  |  Dealer: %s =====[/color][/b]" % [hand_text, _name(round_state.dealer_id)])
 	_clear_cut_row()
 	_refresh_table()
@@ -109,6 +125,10 @@ func _on_action_button_pressed() -> void:
 			_discard_and_cut()
 		CribbageRound.Phase.DONE:
 			if encounter.is_finished():
+				if embedded:
+					action_button.disabled = true
+					encounter_finished.emit()
+					return
 				if encounter.can_retry():
 					encounter.retry()
 					_log("\n[b][color=gold]##### Retry: attempt %d #####[/color][/b]" % encounter.attempts)
@@ -270,11 +290,11 @@ func _finish_round() -> void:
 	_log("[b]Hand %d result:[/b] %s +%d, %s +%d   |   Game: %d - %d" % [hand_number, _tag(CribbageRound.PLAYER_ID), round_state.scores[CribbageRound.PLAYER_ID], _tag(CribbageRound.OPPONENT_ID), round_state.scores[CribbageRound.OPPONENT_ID], encounter.totals[CribbageRound.PLAYER_ID], encounter.totals[CribbageRound.OPPONENT_ID]])
 	match encounter.outcome:
 		Encounter.Outcome.WON:
-			action_button.text = "Play Again"
+			action_button.text = "Continue" if embedded else "Play Again"
 			_log("[b][color=lime]You won the encounter! Reward: %d[/color][/b]" % encounter.reward())
 			_update_status("You won! Reward: %d." % encounter.reward())
 		Encounter.Outcome.LOST:
-			action_button.text = "Retry (cost %d)" % encounter.retry_cost()
+			action_button.text = "Continue" if embedded else "Retry (cost %d)" % encounter.retry_cost()
 			_log("[b][color=red]You lost the encounter.[/color][/b]")
 			_update_status("You lost the encounter.")
 		_:
@@ -356,7 +376,14 @@ func _fill_cut_line() -> void:
 		var button := Button.new()
 		button.custom_minimum_size = Vector2(14, 64)
 		button.focus_mode = Control.FOCUS_NONE
-		button.modulate = Color("9fe3cf")
+		button.tooltip_text = "Cut here"
+		for state in ["normal", "hover", "pressed"]:
+			var style := StyleBoxFlat.new()
+			style.bg_color = {"normal": Color("3f9c86"), "hover": Color("ffe27a"), "pressed": Color("ffb300")}[state]
+			style.set_border_width_all(1)
+			style.border_color = Color("14332b")
+			style.set_corner_radius_all(2)
+			button.add_theme_stylebox_override(state, style)
 		button.pressed.connect(_on_cut_pressed.bind(index))
 		cut_row.add_child(button)
 
@@ -392,8 +419,8 @@ func _tag(id: String) -> String:
 
 
 func _update_status(message: String) -> void:
-	var hand_text := "Sudden death" if encounter.in_sudden_death else "Hand %d/%d" % [mini(encounter.hands_played + 1, ENCOUNTER_DATA.hand_limit), ENCOUNTER_DATA.hand_limit]
-	status_label.text = "%s: %s   |   Dealer: %s   |   Target %d\n%s" % [ENCOUNTER_DATA.display_name, hand_text, _name(round_state.dealer_id), ENCOUNTER_DATA.target_score, message]
+	var hand_text := "Sudden death" if encounter.in_sudden_death else "Hand %d/%d" % [mini(encounter.hands_played + 1, encounter.hand_limit()), encounter.hand_limit()]
+	status_label.text = "%s: %s   |   Dealer: %s   |   Target %d\n%s" % [encounter.data.display_name, hand_text, _name(round_state.dealer_id), encounter.target_score(), message]
 
 
 func _on_back_button_pressed() -> void:

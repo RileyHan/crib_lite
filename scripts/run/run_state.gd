@@ -9,11 +9,14 @@ signal encounter_started(encounter: Encounter)
 signal currency_changed(amount: int)
 signal stage_cleared(stage_number: int)
 signal run_finished(won: bool)
+signal perk_gained(perk: PerkData)
 
-enum Phase { SELECTING, IN_ENCOUNTER, SHOP, WON, LOST }
+enum Phase { SELECTING, IN_ENCOUNTER, SHOP, WON, LOST, STARTER_PERK }
 
 var config: RunConfig
 var phase: Phase = Phase.SELECTING
+var perks := PerkManager.new()
+var starter_offer: Array[PerkData] = []
 var stage_index := 0
 var currency := 0
 var encounters_won := 0
@@ -37,7 +40,22 @@ func _init(run_config: RunConfig, player: CardDeck, opponent: CardDeck, rng: Ran
 		_rng = RandomNumberGenerator.new()
 		_rng.randomize()
 	currency = config.starting_currency
+	perks.perk_added.connect(func(perk: PerkData) -> void: perk_gained.emit(perk))
+	starter_offer = config.starter_offer(_rng)
+	if starter_offer.is_empty():
+		_begin_stage()
+	else:
+		phase = Phase.STARTER_PERK
+
+
+# Takes the free starter perk and begins the first stage.
+func choose_starter_perk(perk: PerkData) -> bool:
+	if phase != Phase.STARTER_PERK or not starter_offer.has(perk):
+		return false
+	perks.add_perk(perk)
+	starter_offer.clear()
 	_begin_stage()
+	return true
 
 
 func stage_number() -> int:
@@ -83,7 +101,7 @@ func select_encounter(data: EncounterData) -> Encounter:
 	if phase != Phase.SELECTING or not available_encounters().has(data):
 		return null
 	current_data = data
-	current_encounter = Encounter.new(data, player_deck, opponent_deck, CribbageRound.OPPONENT_ID, _rng)
+	current_encounter = Encounter.new(data, player_deck, opponent_deck, CribbageRound.OPPONENT_ID, _rng, perks)
 	phase = Phase.IN_ENCOUNTER
 	encounter_started.emit(current_encounter)
 	return current_encounter

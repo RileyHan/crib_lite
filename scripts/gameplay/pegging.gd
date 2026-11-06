@@ -19,6 +19,8 @@ var turn_id: String
 var last_player_id := ""
 var finished := false
 var event_log: Array[Dictionary] = []
+# Perks of one seat (perks.owner_id); null for plain pegging.
+var perks: PerkManager
 
 
 func _init(player_hands: Dictionary, first_id: String) -> void:
@@ -67,6 +69,11 @@ func play(id: String, card: PlayingCard) -> Dictionary:
 	for event in score_play(pile, count):
 		_award(id, event)
 		events.append(event)
+	if perks != null and id == perks.owner_id:
+		var play_events: Array[Dictionary] = events.duplicate()
+		for bonus in perks.dispatch(PerkData.Trigger.PEG_PLAY, {"owner_id": id, "scope": "pegging", "card": card, "events": play_events, "count": count}):
+			_award(id, bonus)
+			events.append(bonus)
 	events.append_array(_advance(id))
 	return {"ok": true, "events": events}
 

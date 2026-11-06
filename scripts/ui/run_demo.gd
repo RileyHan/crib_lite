@@ -1,10 +1,9 @@
 extends Control
 
-# Placeholder run map. Encounters are auto-played by an AI standing in for the player until the
-# full run loop UI is built.
+# Placeholder run map. Each encounter is played on the interactive round table.
 
 const CONFIG = preload("res://resources/run/run_default.tres")
-const PLAYER_PROFILE = preload("res://resources/opponents/ai_normal.tres")
+const TableScene = preload("res://scenes/gameplay/round_demo.tscn")
 const DeckScript = preload("res://scripts/gameplay/deck.gd")
 
 var run: RunState
@@ -12,6 +11,7 @@ var log_text := ""
 var header: Label
 var options_box: VBoxContainer
 var log_label: RichTextLabel
+var map_root: Control
 
 
 func _ready() -> void:
@@ -25,6 +25,7 @@ func _build_layout() -> void:
 	for side in ["left", "right", "top", "bottom"]:
 		margin.add_theme_constant_override("margin_" + side, 24)
 	add_child(margin)
+	map_root = margin
 	var layout := VBoxContainer.new()
 	layout.add_theme_constant_override("separation", 12)
 	margin.add_child(layout)
@@ -36,6 +37,8 @@ func _build_layout() -> void:
 	layout.add_child(options_box)
 	log_label = RichTextLabel.new()
 	log_label.bbcode_enabled = true
+	log_label.selection_enabled = true
+	log_label.context_menu_enabled = true
 	log_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	layout.add_child(log_label)
 	var back := Button.new()
@@ -46,7 +49,7 @@ func _build_layout() -> void:
 
 func _new_run() -> void:
 	run = RunState.new(CONFIG, DeckScript.new(CribbageRound.PLAYER_ID), DeckScript.new(CribbageRound.OPPONENT_ID))
-	log_text = "[b]New run started.[/b] Auto-play stands in for you until the full run UI exists.\n"
+	log_text = "[b]New run started.[/b] Pick a starter perk, then play each encounter at the table.\n"
 	_refresh()
 
 
@@ -54,7 +57,16 @@ func _refresh() -> void:
 	header.text = "Stage %d of %d   |   Currency: %d   |   Encounters won: %d" % [mini(run.stage_number(), CONFIG.stage_count), CONFIG.stage_count, run.currency, run.encounters_won]
 	for child in options_box.get_children():
 		child.queue_free()
+	if not run.perks.active().is_empty():
+		var names: Array[String] = []
+		for perk in run.perks.active():
+			names.append("%s (%s)" % [perk.display_name, perk.description])
+		_add_label("Perks: " + "; ".join(names))
 	match run.phase:
+		RunState.Phase.STARTER_PERK:
+			_add_label("Choose your free starter perk:")
+			for perk in run.starter_offer:
+				_add_button("%s  -  %s" % [perk.display_name, perk.description], _choose_starter.bind(perk))
 		RunState.Phase.SELECTING:
 			_add_label("Choose an encounter (the boss unlocks after one win):")
 			for data in run.available_encounters():
@@ -89,32 +101,41 @@ func _add_button(text: String, callback: Callable) -> void:
 	options_box.add_child(button)
 
 
+func _choose_starter(perk: PerkData) -> void:
+	if run.choose_starter_perk(perk):
+		log_text += "Starter perk chosen: [b]%s[/b]\n" % perk.display_name
+	_refresh()
+
+
 func _play_encounter(data: EncounterData) -> void:
 	var encounter := run.select_encounter(data)
 	if encounter == null:
 		return
-	_auto_play(encounter)
+	_play_view(encounter)
 
 
-func _auto_play(encounter: Encounter) -> void:
-	var rng := RandomNumberGenerator.new()
-	rng.randomize()
-	var ais := {
-		CribbageRound.PLAYER_ID: OpponentAI.new(PLAYER_PROFILE, rng),
-		CribbageRound.OPPONENT_ID: OpponentAI.new(encounter.data.opponent_profile, rng),
-	}
-	while not encounter.is_finished():
-		OpponentAI.play_round(encounter.start_hand(), ais)
-		encounter.finish_hand()
+# Plays the encounter on the interactive table; the run resumes when the table reports it is done.
+func _play_view(encounter: Encounter) -> void:
+	var table: Control = TableScene.instantiate()
+	table.encounter = encounter
+	table.encounter_finished.connect(_on_table_finished.bind(table, encounter))
+	add_child(table)
+	table.set_anchors_preset(Control.PRESET_FULL_RECT)
+	map_root.visible = false
+
+
+func _on_table_finished(table: Control, encounter: Encounter) -> void:
+	table.queue_free()
+	map_root.visible = true
 	var won := encounter.outcome == Encounter.Outcome.WON
-	log_text += "%s: you %d - %d opponent (target %d) over %d hands. [b]%s[/b]\n" % [encounter.data.display_name, encounter.totals[CribbageRound.PLAYER_ID], encounter.totals[CribbageRound.OPPONENT_ID], encounter.data.target_score, encounter.hands_played, "WON +%d" % encounter.reward() if won else "LOST"]
+	log_text += "%s: you %d - %d opponent (target %d) over %d hands. [b]%s[/b]\n" % [encounter.data.display_name, encounter.totals[CribbageRound.PLAYER_ID], encounter.totals[CribbageRound.OPPONENT_ID], encounter.target_score(), encounter.hands_played, "WON +%d" % encounter.reward() if won else "LOST"]
 	run.finish_encounter()
 	_refresh()
 
 
 func _retry() -> void:
 	if run.retry_encounter():
-		_auto_play(run.current_encounter)
+		_play_view(run.current_encounter)
 	else:
 		_refresh()
 

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PerkData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/perks/perk_data.gd" id="1_perk"]
+
+[resource]
+script = ExtResource("1_perk")
+id = "low_bar"
+display_name = "Low Bar"
+description = "Encounter targets are 4 points lower."
+rarity = 1
+base_price = 10
+effect = 1
+amount = -4

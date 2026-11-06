@@ -10,7 +10,7 @@ A run has ten configurable stages. Each stage presents two regular encounter opt
 
 ## Encounters
 
-An encounter defines its opponent, scoring target, hand limit, reward, difficulty, and retry cost. The baseline is four hands. To win, the player must meet the target and finish ahead of the opponent. Ties use a configurable sudden-death hand by default.
+An encounter defines its opponent, scoring target, hand limit, reward, difficulty, and retry cost. The baseline is four hands. First to reach the target score wins, checked at the end of each hand; if both cross it in the same hand, whoever crossed first while scoring wins. If nobody reaches it by the hand limit, play continues in sudden death (configurable) until someone does, otherwise the player loses.
 
 ## Progression
 
@@ -18,7 +18,7 @@ A run begins with zero currency and one free choice from a curated starter-perk 
 
 ## Prototype scope
 
-Implemented (milestones 1-7 plus UI tweaks): traditional cribbage rules, opponent AI, encounters, run progression, and a playable round demo. Perks, the real shop and economy, and the integrated run UI are future work.
+Implemented (milestones 1-8 plus UI tweaks): traditional cribbage rules, opponent AI, encounters, run progression, a playable round demo, and perks. A run opens with a free pick of one of three random starter perks (six starters exist; 13 perks total across common/uncommon/rare). Perks last for the run, an encounter, or a single hand, and can add bonus points (on pegging plays, scored hand/crib items, or hand start), lower the target, add hands, raise rewards, or discount retries. Perks only affect the player. The real shop and economy and the integrated run UI are future work.
 
 Round presentation rules:
 - Three and four of a kind score as a single item (6 and 12 points) rather than separate pairs.

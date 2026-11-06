@@ -9,7 +9,7 @@ Each milestone should be implemented and verified before beginning the next.
 5. **Opponent AI** - Baseline discard and pegging decisions.
 6. **Encounters** - Targets, hand limits, outcomes, sudden death, and retries.
 7. **Roguelite progression** - Ten stages, encounter selection, bosses, rewards, and currency.
-8. **Perks** - Data-driven resources, starter selection, triggers, and effects.
+8. **Perks** (done) - Data-driven resources, starter selection, triggers, and effects.
 9. **Shop and economy** - Inventory, rarity, pricing, purchases, and retry costs.
 10. **Playable prototype** - Complete run loop, functional placeholder UI, and end-to-end testing.
 11. **Art and polish** - Replace placeholders and add requested presentation improvements.

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="RunConfig" load_steps=11 format=3]
+[gd_resource type="Resource" script_class="RunConfig" load_steps=25 format=3]
 
 [ext_resource type="Script" path="res://scripts/run/run_config.gd" id="1_cfg"]
 [ext_resource type="Script" path="res://scripts/encounters/encounter_data.gd" id="2_data"]
@@ -10,6 +10,20 @@
 [ext_resource type="Resource" path="res://resources/opponents/ai_easy.tres" id="8_easy"]
 [ext_resource type="Resource" path="res://resources/opponents/ai_normal.tres" id="9_normal"]
 [ext_resource type="Resource" path="res://resources/opponents/ai_hard.tres" id="10_hard"]
+[ext_resource type="Script" path="res://scripts/perks/perk_data.gd" id="11_perkdata"]
+[ext_resource type="Resource" path="res://resources/perks/fifteen_fever.tres" id="12_fifteen_fever"]
+[ext_resource type="Resource" path="res://resources/perks/fives_alive.tres" id="13_fives_alive"]
+[ext_resource type="Resource" path="res://resources/perks/pair_pressure.tres" id="14_pair_pressure"]
+[ext_resource type="Resource" path="res://resources/perks/head_start.tres" id="15_head_start"]
+[ext_resource type="Resource" path="res://resources/perks/dealers_edge.tres" id="16_dealers_edge"]
+[ext_resource type="Resource" path="res://resources/perks/tip_jar.tres" id="17_tip_jar"]
+[ext_resource type="Resource" path="res://resources/perks/runners_high.tres" id="18_runners_high"]
+[ext_resource type="Resource" path="res://resources/perks/nobs_knack.tres" id="19_nobs_knack"]
+[ext_resource type="Resource" path="res://resources/perks/low_bar.tres" id="20_low_bar"]
+[ext_resource type="Resource" path="res://resources/perks/extra_hand.tres" id="21_extra_hand"]
+[ext_resource type="Resource" path="res://resources/perks/haggler.tres" id="22_haggler"]
+[ext_resource type="Resource" path="res://resources/perks/lucky_hand.tres" id="23_lucky_hand"]
+[ext_resource type="Resource" path="res://resources/perks/hot_streak.tres" id="24_hot_streak"]
 
 [resource]
 script = ExtResource("1_cfg")
@@ -23,3 +37,5 @@ profiles = Array[ExtResource("7_prof")]([ExtResource("8_easy"), ExtResource("9_n
 target_growth = 3
 reward_growth = 1
 retry_cost_growth = 1
+perk_pool = Array[ExtResource("11_perkdata")]([ExtResource("12_fifteen_fever"), ExtResource("13_fives_alive"), ExtResource("14_pair_pressure"), ExtResource("15_head_start"), ExtResource("16_dealers_edge"), ExtResource("17_tip_jar"), ExtResource("18_runners_high"), ExtResource("19_nobs_knack"), ExtResource("20_low_bar"), ExtResource("21_extra_hand"), ExtResource("22_haggler"), ExtResource("23_lucky_hand"), ExtResource("24_hot_streak")])
+starter_choices = 3

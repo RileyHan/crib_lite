@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="PerkData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/perks/perk_data.gd" id="1_perk"]
+
+[resource]
+script = ExtResource("1_perk")
+id = "haggler"
+display_name = "Haggler"
+description = "Retries cost 2 less currency."
+base_price = 7
+effect = 4
+amount = 2

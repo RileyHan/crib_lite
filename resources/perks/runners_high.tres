@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="PerkData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/perks/perk_data.gd" id="1_perk"]
+
+[resource]
+script = ExtResource("1_perk")
+id = "runners_high"
+display_name = "Runner's High"
+description = "Each run in your hand or crib scores +2."
+rarity = 1
+base_price = 9
+trigger = 2
+event_type = "run"
+amount = 2

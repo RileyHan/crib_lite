@@ -19,6 +19,10 @@ var pegging: Pegging
 var phase: Phase = Phase.DISCARD
 var scores: Dictionary = {PLAYER_ID: 0, OPPONENT_ID: 0}
 var show_results: Array[Dictionary] = []
+# Perks of the player seat; null when the round is played without perks.
+var perks: PerkManager
+# Every score change in the order it happened, used to decide who reached a target first.
+var score_log: Array[Dictionary] = []
 
 
 func _init(player_deck: CardDeck, opponent_deck: CardDeck, round_dealer_id: String = OPPONENT_ID) -> void:
@@ -38,6 +42,10 @@ func deal(rng: RandomNumberGenerator = null) -> void:
 	for id in decks:
 		decks[id].shuffle(rng)
 		decks[id].deal_to(hands[id], DEAL_SIZE)
+	if perks != null:
+		for event in perks.dispatch(PerkData.Trigger.HAND_STARTED, {"owner_id": perks.owner_id, "scope": "deal"}):
+			_bank(perks.owner_id, event["points"])
+			show_results.append({"label": "Perk: %s" % event["description"], "owner_id": perks.owner_id, "result": {"total": event["points"], "events": [event]}})
 
 
 func discard(id: String, discards: Array[PlayingCard]) -> bool:
@@ -74,8 +82,9 @@ func cut(_rng: RandomNumberGenerator = null, cut_index: int = -1) -> PlayingCard
 		cut_card = dealer_deck.draw(1)[0]
 	phase = Phase.PEGGING
 	pegging = Pegging.new({PLAYER_ID: hands[PLAYER_ID].cards, OPPONENT_ID: hands[OPPONENT_ID].cards}, nondealer_id())
+	pegging.perks = perks
 	for event in Scoring.his_heels(cut_card):
-		scores[dealer_id] += event["points"]
+		_bank(dealer_id, event["points"])
 		show_results.append({"label": "His Heels (dealer)", "owner_id": dealer_id, "result": {"total": event["points"], "events": [event]}})
 	return cut_card
 
@@ -84,10 +93,10 @@ func cut(_rng: RandomNumberGenerator = null, cut_index: int = -1) -> PlayingCard
 func finish_pegging() -> bool:
 	if phase != Phase.PEGGING or pegging == null or not pegging.finished:
 		return false
+	for entry in pegging.event_log:
+		_bank(entry["owner_id"], entry["event"]["points"])
 	for id in [nondealer_id(), dealer_id]:
-		var total: int = pegging.scores[id]
-		scores[id] += total
-		show_results.append({"label": "Pegging (%s)" % id, "owner_id": id, "result": {"total": total, "events": pegging.events_for(id)}})
+		show_results.append({"label": "Pegging (%s)" % id, "owner_id": id, "result": {"total": pegging.scores[id], "events": pegging.events_for(id)}})
 	phase = Phase.SHOW
 	return true
 
@@ -98,8 +107,8 @@ func score_show() -> Array[Dictionary]:
 		return show_results
 	var order: Array[String] = [nondealer_id(), dealer_id]
 	for id in order:
-		_add_result("%s hand" % id.capitalize(), id, Scoring.score_hand(hands[id].cards, cut_card))
-	_add_result("Crib (%s)" % dealer_id, dealer_id, Scoring.score_hand(crib.cards, cut_card, true))
+		_add_result("%s hand" % id.capitalize(), id, Scoring.score_hand(hands[id].cards, cut_card), "hand")
+	_add_result("Crib (%s)" % dealer_id, dealer_id, Scoring.score_hand(crib.cards, cut_card, true), "crib")
 	phase = Phase.DONE
 	return show_results
 
@@ -116,6 +125,26 @@ func cleanup() -> void:
 		cut_card = null
 
 
-func _add_result(label: String, id: String, result: Dictionary) -> void:
-	scores[id] += result["total"]
+func _add_result(label: String, id: String, result: Dictionary, scope := "") -> void:
+	if perks != null and scope != "":
+		for event in perks.dispatch(PerkData.Trigger.SHOW_SCORED, {"owner_id": id, "scope": scope, "events": result["events"]}):
+			result["events"].append(event)
+			result["total"] += event["points"]
+	_bank(id, result["total"])
 	show_results.append({"label": label, "owner_id": id, "result": result})
+
+
+func _bank(id: String, points: int) -> void:
+	scores[id] += points
+	if points > 0:
+		score_log.append({"id": id, "points": points})
+
+
+# Who reached the target first, scanning this hand's scoring in order. "" if neither did.
+func first_to_reach(target: int, carried: Dictionary) -> String:
+	var running := carried.duplicate()
+	for entry in score_log:
+		running[entry["id"]] += entry["points"]
+		if running[entry["id"]] >= target:
+			return entry["id"]
+	return ""

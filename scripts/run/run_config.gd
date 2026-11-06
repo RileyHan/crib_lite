@@ -16,6 +16,22 @@ extends Resource
 @export var target_growth := 3
 @export var reward_growth := 1
 @export var retry_cost_growth := 1
+# Every perk that can appear in this run (starter picks and, later, the shop).
+@export var perk_pool: Array[PerkData] = []
+# Number of starter perks offered at the start of a run (the player keeps one).
+@export var starter_choices := 3
+
+
+# Random selection of starter perks from the pool; empty when the pool has none.
+func starter_offer(rng: RandomNumberGenerator) -> Array[PerkData]:
+	var candidates: Array[PerkData] = []
+	for perk in perk_pool:
+		if perk.starter:
+			candidates.append(perk)
+	var offer: Array[PerkData] = []
+	while offer.size() < starter_choices and not candidates.is_empty():
+		offer.append(candidates.pop_at(rng.randi_range(0, candidates.size() - 1)))
+	return offer
 
 
 # Returns {"regular": Array[EncounterData], "boss": EncounterData} for a zero-based stage index.

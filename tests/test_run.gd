@@ -15,7 +15,10 @@ func _check(actual: Variant, expected: Variant, label: String) -> void:
 func _new_run(seed_value: int = 1, run_config: RunConfig = null) -> RunState:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
-	return RunState.new(run_config if run_config != null else config, DeckScript.new("player"), DeckScript.new("opponent"), rng)
+	var run := RunState.new(run_config if run_config != null else config, DeckScript.new("player"), DeckScript.new("opponent"), rng)
+	if run.phase == RunState.Phase.STARTER_PERK:
+		run.choose_starter_perk(run.starter_offer[0])
+	return run
 
 
 # Plays the selected encounter to a forced result without simulating cribbage.
@@ -158,7 +161,7 @@ func _initialize() -> void:
 	# A real AI-played encounter flows through the run state.
 	var real_rng := RandomNumberGenerator.new()
 	real_rng.seed = 77
-	var real_run := RunState.new(config, DeckScript.new("player"), DeckScript.new("opponent"), real_rng)
+	var real_run := _new_run(77)
 	var real_encounter := real_run.select_encounter(real_run.regular_encounters[0])
 	var ais := {
 		"player": OpponentAI.new(config.profiles[1], real_rng),
