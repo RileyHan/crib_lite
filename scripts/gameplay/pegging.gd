@@ -8,6 +8,8 @@ extends RefCounted
 # Go is resolved automatically: a player with no legal card must pass, and when neither
 # player can play the last player to play scores 1 (or 2 for reaching exactly 31 instead).
 
+signal points_scored(owner_id: String, event: Dictionary)
+
 const MAX_COUNT := 31
 
 var hands: Dictionary = {}
@@ -21,6 +23,8 @@ var finished := false
 var event_log: Array[Dictionary] = []
 # Perks of one seat (perks.owner_id); null for plain pegging.
 var perks: PerkManager
+# Chips x Mult upgrades of one seat (loadout.owner_id); null for plain pegging.
+var loadout: ScoreLoadout
 
 
 func _init(player_hands: Dictionary, first_id: String) -> void:
@@ -71,9 +75,14 @@ func play(id: String, card: PlayingCard) -> Dictionary:
 		events.append(event)
 	if perks != null and id == perks.owner_id:
 		var play_events: Array[Dictionary] = events.duplicate()
-		for bonus in perks.dispatch(PerkData.Trigger.PEG_PLAY, {"owner_id": id, "scope": "pegging", "card": card, "events": play_events, "count": count}):
+		var context := {"owner_id": id, "scope": "pegging", "card": card, "events": play_events, "count": count}
+		for bonus in perks.dispatch(PerkData.Trigger.PEG_PLAY, context):
 			_award(id, bonus)
 			events.append(bonus)
+		var multiplied := _multiply(id, events)
+		events.append_array(multiplied)
+		perks.grow_multipliers(PerkData.Trigger.PEG_PLAY, context)
+	events.append_array(_chips_mult(id, events))
 	events.append_array(_advance(id))
 	return {"ok": true, "events": events}
 
@@ -121,6 +130,8 @@ static func score_play(sequence: Array[PlayingCard], total: int) -> Array[Dictio
 
 func _advance(mover: String) -> Array[Dictionary]:
 	var events: Array[Dictionary] = []
+	if finished:
+		return events
 	var other := other_id(mover)
 	if count == MAX_COUNT:
 		_reset_count()
@@ -131,6 +142,8 @@ func _advance(mover: String) -> Array[Dictionary]:
 		var last_card := _event("last_card", 1, [pile.back()], "Last card")
 		_award(mover, last_card)
 		events.append(last_card)
+		events.append_array(_multiply(mover, [last_card]))
+		events.append_array(_chips_mult(mover, [last_card]))
 		finished = true
 		return events
 	if can_play(other):
@@ -146,6 +159,8 @@ func _advance(mover: String) -> Array[Dictionary]:
 	var go := _event("go", 1, [pile.back()], "Go")
 	_award(mover, go)
 	events.append(go)
+	events.append_array(_multiply(mover, [go]))
+	events.append_array(_chips_mult(mover, [go]))
 	_reset_count()
 	turn_id = other if not hands[other].is_empty() else mover
 	return events
@@ -167,6 +182,34 @@ func _award(id: String, event: Dictionary) -> void:
 	event["owner_id"] = id
 	scores[id] += event["points"]
 	event_log.append({"owner_id": id, "event": event})
+	points_scored.emit(id, event)
+
+
+# Awards the owner's score multiplier on top of the given scored events (0 or 1 extra events).
+func _multiply(id: String, scored: Array) -> Array[Dictionary]:
+	var extra: Array[Dictionary] = []
+	if perks == null or id != perks.owner_id:
+		return extra
+	var base := 0
+	for event in scored:
+		base += event["points"]
+	var bonus := perks.multiplier_event(id, base)
+	if not bonus.is_empty():
+		_award(id, bonus)
+		extra.append(bonus)
+	return extra
+
+
+# Adds the owner's Chips x Mult bonus on top of the given scored events (0 or 1 extra events).
+func _chips_mult(id: String, scored: Array) -> Array[Dictionary]:
+	var extra: Array[Dictionary] = []
+	if loadout == null or id != loadout.owner_id:
+		return extra
+	var bonus := loadout.bonus_event(scored, "pegging")
+	if not bonus.is_empty():
+		_award(id, bonus)
+		extra.append(bonus)
+	return extra
 
 
 static func _pair_name(same: int) -> String:

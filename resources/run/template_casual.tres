@@ -14,3 +14,4 @@ reward = 3
 difficulty = 1
 retry_cost = 1
 sudden_death_enabled = true
+player_head_start = 8

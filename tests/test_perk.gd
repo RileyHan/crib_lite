@@ -7,7 +7,7 @@ const C := PlayingCard.Suit.CLUBS
 const D := PlayingCard.Suit.DIAMONDS
 const H := PlayingCard.Suit.HEARTS
 const S := PlayingCard.Suit.SPADES
-const PERK_IDS := ["fifteen_fever", "fives_alive", "pair_pressure", "head_start", "dealers_edge", "tip_jar", "runners_high", "nobs_knack", "low_bar", "extra_hand", "haggler", "lucky_hand", "hot_streak"]
+const PERK_IDS := ["fifteen_fever", "fives_alive", "pair_pressure", "head_start", "dealers_edge", "tip_jar", "runners_high", "nobs_knack", "low_bar", "extra_hand", "haggler", "lucky_hand", "hot_streak", "momentum", "run_rhythm"]
 
 var failures := 0
 
@@ -200,7 +200,8 @@ func _test_encounter() -> void:
 
 
 func _test_run() -> void:
-	var config: RunConfig = load("res://resources/run/run_default.tres")
+	var config: RunConfig = load("res://resources/run/run_default.tres").duplicate()
+	config.chips_mult = false
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 11
 	var run := RunState.new(config, DeckScript.new("player"), DeckScript.new("opponent"), rng)

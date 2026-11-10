@@ -23,6 +23,12 @@ var show_results: Array[Dictionary] = []
 var perks: PerkManager
 # Every score change in the order it happened, used to decide who reached a target first.
 var score_log: Array[Dictionary] = []
+# Set by the encounter: the round ends the moment someone's carried-in total plus this hand's score reaches the target.
+var target := 0
+var carried: Dictionary = {PLAYER_ID: 0, OPPONENT_ID: 0}
+var winner_id := ""
+# Chips x Mult upgrades of the player seat. When set, only that seat can win the hand by reaching the target.
+var loadout: ScoreLoadout
 
 
 func _init(player_deck: CardDeck, opponent_deck: CardDeck, round_dealer_id: String = OPPONENT_ID) -> void:
@@ -83,21 +89,24 @@ func cut(_rng: RandomNumberGenerator = null, cut_index: int = -1) -> PlayingCard
 	phase = Phase.PEGGING
 	pegging = Pegging.new({PLAYER_ID: hands[PLAYER_ID].cards, OPPONENT_ID: hands[OPPONENT_ID].cards}, nondealer_id())
 	pegging.perks = perks
+	pegging.loadout = loadout
+	pegging.points_scored.connect(func(id: String, event: Dictionary) -> void: _bank(id, event["points"]))
+	if winner_id != "":
+		pegging.finished = true
 	for event in Scoring.his_heels(cut_card):
 		_bank(dealer_id, event["points"])
 		show_results.append({"label": "His Heels (dealer)", "owner_id": dealer_id, "result": {"total": event["points"], "events": [event]}})
 	return cut_card
 
 
-# Banks pegging points once play is over and moves on to the show.
+# Moves on from pegging (points were already banked live as they were scored). If someone reached
+# the target during pegging the hand is over and the show is skipped.
 func finish_pegging() -> bool:
 	if phase != Phase.PEGGING or pegging == null or not pegging.finished:
 		return false
-	for entry in pegging.event_log:
-		_bank(entry["owner_id"], entry["event"]["points"])
 	for id in [nondealer_id(), dealer_id]:
 		show_results.append({"label": "Pegging (%s)" % id, "owner_id": id, "result": {"total": pegging.scores[id], "events": pegging.events_for(id)}})
-	phase = Phase.SHOW
+	phase = Phase.DONE if winner_id != "" else Phase.SHOW
 	return true
 
 
@@ -107,8 +116,11 @@ func score_show() -> Array[Dictionary]:
 		return show_results
 	var order: Array[String] = [nondealer_id(), dealer_id]
 	for id in order:
+		if winner_id != "":
+			break
 		_add_result("%s hand" % id.capitalize(), id, Scoring.score_hand(hands[id].cards, cut_card), "hand")
-	_add_result("Crib (%s)" % dealer_id, dealer_id, Scoring.score_hand(crib.cards, cut_card, true), "crib")
+	if winner_id == "":
+		_add_result("Crib (%s)" % dealer_id, dealer_id, Scoring.score_hand(crib.cards, cut_card, true), "crib")
 	phase = Phase.DONE
 	return show_results
 
@@ -127,9 +139,20 @@ func cleanup() -> void:
 
 func _add_result(label: String, id: String, result: Dictionary, scope := "") -> void:
 	if perks != null and scope != "":
-		for event in perks.dispatch(PerkData.Trigger.SHOW_SCORED, {"owner_id": id, "scope": scope, "events": result["events"]}):
+		var context := {"owner_id": id, "scope": scope, "events": result["events"].duplicate()}
+		for event in perks.dispatch(PerkData.Trigger.SHOW_SCORED, context):
 			result["events"].append(event)
 			result["total"] += event["points"]
+		var multiplied := perks.multiplier_event(id, result["total"])
+		if not multiplied.is_empty():
+			result["events"].append(multiplied)
+			result["total"] += multiplied["points"]
+		perks.grow_multipliers(PerkData.Trigger.SHOW_SCORED, context)
+	if loadout != null and id == loadout.owner_id and scope != "":
+		var bonus := loadout.bonus_event(result["events"], scope)
+		if not bonus.is_empty():
+			result["events"].append(bonus)
+			result["total"] += bonus["points"]
 	_bank(id, result["total"])
 	show_results.append({"label": label, "owner_id": id, "result": result})
 
@@ -138,6 +161,11 @@ func _bank(id: String, points: int) -> void:
 	scores[id] += points
 	if points > 0:
 		score_log.append({"id": id, "points": points})
+		var can_win := loadout == null or id == loadout.owner_id
+		if can_win and target > 0 and winner_id == "" and int(carried[id]) + scores[id] >= target:
+			winner_id = id
+			if pegging != null and phase == Phase.PEGGING:
+				pegging.finished = true
 
 
 # Who reached the target first, scanning this hand's scoring in order. "" if neither did.

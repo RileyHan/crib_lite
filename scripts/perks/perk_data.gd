@@ -7,8 +7,10 @@ extends Resource
 enum Rarity { COMMON, UNCOMMON, RARE }
 # RUN perks persist for the whole run; ENCOUNTER and HAND perks are temporary and expire automatically.
 enum Duration { RUN, ENCOUNTER, HAND }
-enum Effect { BONUS_POINTS, TARGET_DELTA, HAND_LIMIT_DELTA, REWARD_BONUS, RETRY_DISCOUNT }
-# Only BONUS_POINTS perks use triggers; the other effects are passive modifiers.
+enum Effect { BONUS_POINTS, TARGET_DELTA, HAND_LIMIT_DELTA, REWARD_BONUS, RETRY_DISCOUNT, MULTIPLIER }
+# BONUS_POINTS and MULTIPLIER perks use triggers; the other effects are passive modifiers.
+# A MULTIPLIER perk holds one permanent score multiplier (1 + start_bonus + growth). It is applied to everything the
+# player scores, and every matching trigger event grows it by `amount` (up to max_bonus) for later scoring only.
 enum Trigger { NONE, PEG_PLAY, SHOW_SCORED, HAND_STARTED }
 
 @export var id := "perk"
@@ -31,3 +33,6 @@ enum Trigger { NONE, PEG_PLAY, SHOW_SCORED, HAND_STARTED }
 @export var per_event := true
 # Maximum matches counted per hand; 0 = unlimited.
 @export var max_triggers_per_hand := 0
+# MULTIPLIER perks: bonus the multiplier starts with, and the largest bonus it can reach (0 = no cap).
+@export var start_bonus := 0
+@export var max_bonus := 0

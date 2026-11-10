@@ -49,7 +49,7 @@ func _build_layout() -> void:
 
 func _new_run() -> void:
 	run = RunState.new(CONFIG, DeckScript.new(CribbageRound.PLAYER_ID), DeckScript.new(CribbageRound.OPPONENT_ID))
-	log_text = "[b]New run started.[/b] Pick a starter perk, then play each encounter at the table.\n"
+	log_text = "[b]New run started.[/b] Play each encounter at the table; clear a boss to visit the shop.\n"
 	_refresh()
 
 
@@ -62,6 +62,13 @@ func _refresh() -> void:
 		for perk in run.perks.active():
 			names.append("%s (%s)" % [perk.display_name, perk.description])
 		_add_label("Perks: " + "; ".join(names))
+	if run.loadout != null and run.loadout.has_modifiers():
+		var owned: Array[String] = []
+		for peg in run.loadout.pegs:
+			owned.append("%s (%s)" % [peg.display_name, peg.description])
+		for relic in run.loadout.relics:
+			owned.append("%s (%s)" % [relic.display_name, relic.description])
+		_add_label("Loadout: " + "; ".join(owned))
 	match run.phase:
 		RunState.Phase.STARTER_PERK:
 			_add_label("Choose your free starter perk:")
@@ -77,8 +84,7 @@ func _refresh() -> void:
 			_add_button("Retry (cost %d)" % run.current_encounter.retry_cost(), _retry)
 			_add_button("Abandon run", _abandon)
 		RunState.Phase.SHOP:
-			_add_label("Shop (placeholder for a later milestone). Stage %d cleared!" % run.stages_cleared)
-			_add_button("Leave shop", _leave_shop)
+			_build_shop()
 		RunState.Phase.WON:
 			_add_label("You cleared all %d stages. Run won!" % CONFIG.stage_count)
 			_add_button("New run", _new_run)
@@ -94,11 +100,57 @@ func _add_label(text: String) -> void:
 	options_box.add_child(label)
 
 
-func _add_button(text: String, callback: Callable) -> void:
+func _build_shop() -> void:
+	_add_label("Stage %d cleared! Spend your %d coins on pegs and relics." % [run.stages_cleared, run.currency])
+	var shop := run.upgrade_shop
+	if shop == null:
+		_add_button("Leave shop", _leave_shop)
+		return
+	for item in shop.offers:
+		var text := "Buy %s: %s [%s]  -  %s  -  %d coins" % [UpgradeShop.kind_of(item), item.display_name, _rarity_name(item), item.description, shop.price_of(item)]
+		var button := _add_button(text, _buy.bind(item))
+		button.disabled = not shop.can_buy(item)
+	if shop.offers.is_empty():
+		_add_label("Sold out.")
+	var reroll := _add_button("Reroll offers (%d coins)" % shop.reroll_cost(), _reroll)
+	reroll.disabled = not shop.can_reroll()
+	var owned: Array[Resource] = []
+	owned.append_array(run.loadout.pegs)
+	owned.append_array(run.loadout.relics)
+	for item in owned:
+		var sell := _add_button("Sell %s: %s  -  +%d coins" % [UpgradeShop.kind_of(item), item.display_name, shop.sell_price_of(item)], _sell.bind(item))
+		sell.disabled = not shop.can_sell(item)
+	_add_button("Leave shop", _leave_shop)
+
+
+func _rarity_name(item: Resource) -> String:
+	var names: Array = PegData.Rarity.keys()
+	return String(names[int(item.rarity)]).capitalize()
+
+
+func _buy(item: Resource) -> void:
+	if run.upgrade_shop.buy(item):
+		log_text += "Bought [b]%s[/b].\n" % item.display_name
+	_refresh()
+
+
+func _sell(item: Resource) -> void:
+	if run.upgrade_shop.sell(item):
+		log_text += "Sold [b]%s[/b].\n" % item.display_name
+	_refresh()
+
+
+func _reroll() -> void:
+	run.upgrade_shop.reroll()
+	_refresh()
+
+
+func _add_button(text: String, callback: Callable) -> Button:
 	var button := Button.new()
 	button.text = text
 	button.pressed.connect(callback)
 	options_box.add_child(button)
+	return button
 
 
 func _choose_starter(perk: PerkData) -> void:
@@ -128,7 +180,8 @@ func _on_table_finished(table: Control, encounter: Encounter) -> void:
 	table.queue_free()
 	map_root.visible = true
 	var won := encounter.outcome == Encounter.Outcome.WON
-	log_text += "%s: you %d - %d opponent (target %d) over %d hands. [b]%s[/b]\n" % [encounter.data.display_name, encounter.totals[CribbageRound.PLAYER_ID], encounter.totals[CribbageRound.OPPONENT_ID], encounter.target_score(), encounter.hands_played, "WON +%d" % encounter.reward() if won else "LOST"]
+	var score_text := "you %d" % encounter.totals[CribbageRound.PLAYER_ID] if CONFIG.chips_mult else "you %d - %d opponent" % [encounter.totals[CribbageRound.PLAYER_ID], encounter.totals[CribbageRound.OPPONENT_ID]]
+	log_text += "%s: %s (target %d) over %d hands. [b]%s[/b]\n" % [encounter.data.display_name, score_text, encounter.target_score(), encounter.hands_played, "WON +%d" % encounter.reward() if won else "LOST"]
 	run.finish_encounter()
 	_refresh()
 

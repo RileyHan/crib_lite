@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PegData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="1_peg"]
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="2_eff"]
+
+[sub_resource type="Resource" id="Resource_a"]
+script = ExtResource("2_eff")
+kind = 1
+value = 4.0
+category = "flush"
+
+[resource]
+script = ExtResource("1_peg")
+id = "flush_peg"
+display_name = "Flush Peg"
+description = "+4 Mult whenever a flush scores."
+base_price = 4
+effects = Array[ExtResource("2_eff")]([SubResource("Resource_a")])

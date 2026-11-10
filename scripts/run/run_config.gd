@@ -16,19 +16,34 @@ extends Resource
 @export var target_growth := 3
 @export var reward_growth := 1
 @export var retry_cost_growth := 1
+# The player's head start in the first stages shrinks by this much per stage (never below 0).
+@export var head_start_decay := 1
 # Every perk that can appear in this run (starter picks and, later, the shop).
 @export var perk_pool: Array[PerkData] = []
 # Number of starter perks offered at the start of a run (the player keeps one).
 @export var starter_choices := 3
+# Shop balance; a default ShopConfig is used when unset.
+@export var shop_config: ShopConfig
+# Chips x Mult mode: the player's score goes through pegs and relics and only the player can win.
+@export var chips_mult := false
+# Multiplies encounter targets in Chips x Mult mode, where head starts are disabled.
+@export var score_scale := 1
+@export var starting_pegs: Array[PegData] = []
+@export var starting_relics: Array[RelicData] = []
+# Pegs and relics the Chips x Mult shop can sell.
+@export var peg_pool: Array[PegData] = []
+@export var relic_pool: Array[RelicData] = []
 
 
-# Random selection of starter perks from the pool; empty when the pool has none.
+# Random selection of starter perks from the pool; empty when the pool has none or in Chips x Mult mode, which retires perks.
 func starter_offer(rng: RandomNumberGenerator) -> Array[PerkData]:
+	var offer: Array[PerkData] = []
+	if chips_mult:
+		return offer
 	var candidates: Array[PerkData] = []
 	for perk in perk_pool:
 		if perk.starter:
 			candidates.append(perk)
-	var offer: Array[PerkData] = []
 	while offer.size() < starter_choices and not candidates.is_empty():
 		offer.append(candidates.pop_at(rng.randi_range(0, candidates.size() - 1)))
 	return offer
@@ -62,6 +77,10 @@ func _scaled(template: EncounterData, stage_index: int, tier_offset: int) -> Enc
 	data.reward = template.reward + reward_growth * stage_index
 	data.retry_cost = template.retry_cost + retry_cost_growth * stage_index
 	data.difficulty = template.difficulty + stage_index
+	data.player_head_start = maxi(0, template.player_head_start - head_start_decay * stage_index)
+	if chips_mult:
+		data.target_score *= maxi(score_scale, 1)
+		data.player_head_start = 0
 	var profile := profile_for_stage(stage_index, tier_offset)
 	if profile != null:
 		data.opponent_profile = profile

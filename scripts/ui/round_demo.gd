@@ -281,8 +281,12 @@ func _continue_pegging() -> void:
 func _finish_round() -> void:
 	busy = true
 	round_state.finish_pegging()
+	var ended_early := round_state.winner_id != ""
 	var results := round_state.score_show()
 	_refresh_table(true)
+	if ended_early:
+		_log("[b][color=gold]%s reached the target score of %d during pegging - the hand ends immediately.[/color][/b]" % [_name(round_state.winner_id), encounter.target_score()])
+		await _show_banner("%s reached %d!" % [_name(round_state.winner_id), encounter.target_score()], 1.6)
 	_log_show(results)
 	var hand_number := encounter.hands_played + 1
 	encounter.finish_hand()
@@ -347,8 +351,11 @@ func _show_pile(cards: Array[PlayingCard], count: int) -> void:
 
 func _update_scores() -> void:
 	for id in score_labels:
-		var live: int = 0 if round_banked else round_state.scores[id] + hand_pegging[id]
-		score_labels[id].text = "%s\nPegging: %d\nGame: %d" % [_name(id), hand_pegging[id], encounter.totals[id] + live]
+		var live: int = 0 if round_banked else round_state.scores[id]
+		var text := "%s\nPegging: %d\nGame: %d" % [_name(id), hand_pegging[id], encounter.totals[id] + live]
+		if id == CribbageRound.PLAYER_ID and encounter.perks != null and encounter.perks.multiplier() > 1:
+			text += "\nMultiplier: x%d" % encounter.perks.multiplier()
+		score_labels[id].text = text
 
 
 func _fill_row(row: HBoxContainer, cards: Array[PlayingCard], face_down: bool, clickable: bool, compact := false) -> void:

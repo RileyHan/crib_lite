@@ -22,17 +22,24 @@ var attempts := 1
 var in_sudden_death := false
 var current_round: CribbageRound
 var perks: PerkManager
+# Chips x Mult mode: when set, only the player can win by reaching the target and the hand limit is final.
+var loadout: ScoreLoadout
 var _first_dealer_id: String
 var _rng: RandomNumberGenerator
 
 
-func _init(encounter_data: EncounterData, player: CardDeck, opponent: CardDeck, first_dealer: String = CribbageRound.OPPONENT_ID, rng: RandomNumberGenerator = null, perk_manager: PerkManager = null) -> void:
+func _init(encounter_data: EncounterData, player: CardDeck, opponent: CardDeck, first_dealer: String = CribbageRound.PLAYER_ID, rng: RandomNumberGenerator = null, perk_manager: PerkManager = null) -> void:
 	data = encounter_data
 	player_deck = player
 	opponent_deck = opponent
 	_first_dealer_id = first_dealer
 	_rng = rng
 	perks = perk_manager
+	totals = _starting_totals()
+
+
+func _starting_totals() -> Dictionary:
+	return {CribbageRound.PLAYER_ID: data.player_head_start, CribbageRound.OPPONENT_ID: 0}
 
 
 # Target and hand limit after perk modifiers.
@@ -65,6 +72,9 @@ func start_hand() -> CribbageRound:
 	var dealer := dealer_for_hand(hands_played)
 	current_round = CribbageRound.new(player_deck, opponent_deck, dealer)
 	current_round.perks = perks
+	current_round.loadout = loadout
+	current_round.target = target_score()
+	current_round.carried = totals.duplicate()
 	if perks != null:
 		perks.begin_hand()
 	current_round.deal(_rng)
@@ -98,7 +108,13 @@ func _judge(first_to_target: String = "") -> void:
 	var player_total: int = totals[CribbageRound.PLAYER_ID]
 	var opponent_total: int = totals[CribbageRound.OPPONENT_ID]
 	var player_hit := player_total >= target_score()
-	var opponent_hit := opponent_total >= target_score()
+	var opponent_hit := opponent_total >= target_score() and loadout == null
+	if loadout != null:
+		if player_hit:
+			_finish(Outcome.WON)
+		elif hands_played >= hand_limit():
+			_finish(Outcome.LOST)
+		return
 	if player_hit or opponent_hit:
 		var winner := first_to_target
 		if player_hit != opponent_hit:
@@ -139,7 +155,7 @@ func retry_cost() -> int:
 func retry() -> bool:
 	if not can_retry():
 		return false
-	totals = {CribbageRound.PLAYER_ID: 0, CribbageRound.OPPONENT_ID: 0}
+	totals = _starting_totals()
 	hands_played = 0
 	in_sudden_death = false
 	outcome = Outcome.IN_PROGRESS

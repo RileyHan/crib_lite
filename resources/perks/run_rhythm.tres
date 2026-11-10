@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PerkData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/perks/perk_data.gd" id="1_perk"]
+
+[resource]
+script = ExtResource("1_perk")
+id = "run_rhythm"
+display_name = "Run Rhythm"
+description = "Permanent multiplier: every run in a scored hand or crib adds +1 to your score multiplier (max x5)."
+rarity = 2
+base_price = 10
+effect = 5
+trigger = 2
+event_type = "run"
+amount = 1
+max_bonus = 4

@@ -56,6 +56,12 @@ func _initialize() -> void:
 				tables_played += 1
 				await _play_table(table)
 			RunState.Phase.SHOP:
+				assert(scene.run.upgrade_shop != null, "Chips x Mult run opens the upgrade shop")
+				assert(scene.options_box.get_child_count() >= 4, "Shop screen lists offers")
+				for offer in scene.run.upgrade_shop.offers.duplicate():
+					if scene.run.upgrade_shop.can_buy(offer):
+						scene._buy(offer)
+						break
 				scene._leave_shop()
 		await process_frame
 	assert(tables_played > 0, "At least one encounter should be played at the table")

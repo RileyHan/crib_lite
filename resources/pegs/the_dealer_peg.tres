@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PegData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="1_peg"]
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="2_eff"]
+
+[sub_resource type="Resource" id="Resource_a"]
+script = ExtResource("2_eff")
+kind = 1
+value = 1.0
+scale_by_points = true
+
+[resource]
+script = ExtResource("1_peg")
+id = "the_dealer_peg"
+display_name = "The Dealer"
+description = "Every scoring combination adds its cribbage points to Mult."
+rarity = 3
+base_price = 20
+effects = Array[ExtResource("2_eff")]([SubResource("Resource_a")])

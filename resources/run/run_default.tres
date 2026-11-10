@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="RunConfig" load_steps=25 format=3]
+[gd_resource type="Resource" script_class="RunConfig" load_steps=49 format=3]
 
 [ext_resource type="Script" path="res://scripts/run/run_config.gd" id="1_cfg"]
 [ext_resource type="Script" path="res://scripts/encounters/encounter_data.gd" id="2_data"]
@@ -24,6 +24,32 @@
 [ext_resource type="Resource" path="res://resources/perks/haggler.tres" id="22_haggler"]
 [ext_resource type="Resource" path="res://resources/perks/lucky_hand.tres" id="23_lucky_hand"]
 [ext_resource type="Resource" path="res://resources/perks/hot_streak.tres" id="24_hot_streak"]
+[ext_resource type="Resource" path="res://resources/shop/shop_default.tres" id="25_shop"]
+[ext_resource type="Resource" path="res://resources/perks/momentum.tres" id="26_momentum"]
+[ext_resource type="Resource" path="res://resources/perks/run_rhythm.tres" id="27_run_rhythm"]
+
+[ext_resource type="Resource" path="res://resources/pegs/fifteen_peg.tres" id="28_fifteen_peg"]
+[ext_resource type="Resource" path="res://resources/pegs/run_peg.tres" id="29_run_peg"]
+[ext_resource type="Resource" path="res://resources/pegs/pair_peg.tres" id="30_pair_peg"]
+
+[ext_resource type="Resource" path="res://resources/pegs/crib_peg.tres" id="pp_crib_peg"]
+[ext_resource type="Resource" path="res://resources/pegs/double_run_peg.tres" id="pp_double_run_peg"]
+[ext_resource type="Resource" path="res://resources/pegs/fifteen_peg.tres" id="pp_fifteen_peg"]
+[ext_resource type="Resource" path="res://resources/pegs/flush_peg.tres" id="pp_flush_peg"]
+[ext_resource type="Resource" path="res://resources/pegs/gold_fifteen_peg.tres" id="pp_gold_fifteen_peg"]
+[ext_resource type="Resource" path="res://resources/pegs/lucky_pair_peg.tres" id="pp_lucky_pair_peg"]
+[ext_resource type="Resource" path="res://resources/pegs/nobs_peg.tres" id="pp_nobs_peg"]
+[ext_resource type="Resource" path="res://resources/pegs/pair_peg.tres" id="pp_pair_peg"]
+[ext_resource type="Resource" path="res://resources/pegs/run_peg.tres" id="pp_run_peg"]
+[ext_resource type="Resource" path="res://resources/pegs/the_dealer_peg.tres" id="pp_the_dealer_peg"]
+[ext_resource type="Resource" path="res://resources/pegs/the_runner_peg.tres" id="pp_the_runner_peg"]
+[ext_resource type="Resource" path="res://resources/pegs/the_skunk_peg.tres" id="pp_the_skunk_peg"]
+[ext_resource type="Resource" path="res://resources/relics/accountant_relic.tres" id="rp_accountant_relic"]
+[ext_resource type="Resource" path="res://resources/relics/cutthroat_relic.tres" id="rp_cutthroat_relic"]
+[ext_resource type="Resource" path="res://resources/relics/dealer_relic.tres" id="rp_dealer_relic"]
+[ext_resource type="Resource" path="res://resources/relics/gambler_relic.tres" id="rp_gambler_relic"]
+[ext_resource type="Resource" path="res://resources/relics/pairadox_relic.tres" id="rp_pairadox_relic"]
+[ext_resource type="Resource" path="res://resources/relics/runner_relic.tres" id="rp_runner_relic"]
 
 [resource]
 script = ExtResource("1_cfg")
@@ -37,5 +63,11 @@ profiles = Array[ExtResource("7_prof")]([ExtResource("8_easy"), ExtResource("9_n
 target_growth = 3
 reward_growth = 1
 retry_cost_growth = 1
-perk_pool = Array[ExtResource("11_perkdata")]([ExtResource("12_fifteen_fever"), ExtResource("13_fives_alive"), ExtResource("14_pair_pressure"), ExtResource("15_head_start"), ExtResource("16_dealers_edge"), ExtResource("17_tip_jar"), ExtResource("18_runners_high"), ExtResource("19_nobs_knack"), ExtResource("20_low_bar"), ExtResource("21_extra_hand"), ExtResource("22_haggler"), ExtResource("23_lucky_hand"), ExtResource("24_hot_streak")])
+perk_pool = Array[ExtResource("11_perkdata")]([ExtResource("12_fifteen_fever"), ExtResource("13_fives_alive"), ExtResource("14_pair_pressure"), ExtResource("15_head_start"), ExtResource("16_dealers_edge"), ExtResource("17_tip_jar"), ExtResource("18_runners_high"), ExtResource("19_nobs_knack"), ExtResource("20_low_bar"), ExtResource("21_extra_hand"), ExtResource("22_haggler"), ExtResource("23_lucky_hand"), ExtResource("24_hot_streak"), ExtResource("26_momentum"), ExtResource("27_run_rhythm")])
 starter_choices = 3
+shop_config = ExtResource("25_shop")
+chips_mult = true
+score_scale = 6
+starting_pegs = Array[PegData]([ExtResource("28_fifteen_peg"), ExtResource("29_run_peg"), ExtResource("30_pair_peg")])
+peg_pool = Array[PegData]([ExtResource("pp_crib_peg"), ExtResource("pp_double_run_peg"), ExtResource("pp_fifteen_peg"), ExtResource("pp_flush_peg"), ExtResource("pp_gold_fifteen_peg"), ExtResource("pp_lucky_pair_peg"), ExtResource("pp_nobs_peg"), ExtResource("pp_pair_peg"), ExtResource("pp_run_peg"), ExtResource("pp_the_dealer_peg"), ExtResource("pp_the_runner_peg"), ExtResource("pp_the_skunk_peg")])
+relic_pool = Array[RelicData]([ExtResource("rp_accountant_relic"), ExtResource("rp_cutthroat_relic"), ExtResource("rp_dealer_relic"), ExtResource("rp_gambler_relic"), ExtResource("rp_pairadox_relic"), ExtResource("rp_runner_relic")])

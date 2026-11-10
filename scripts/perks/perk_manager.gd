@@ -8,6 +8,7 @@ extends RefCounted
 signal perk_added(perk: PerkData)
 signal perk_removed(perk: PerkData)
 signal perk_triggered(perk: PerkData, points: int, trigger: PerkData.Trigger)
+signal multiplier_changed(total: int)
 
 const PAIR_TYPES: Array[String] = ["pair", "three_of_a_kind", "four_of_a_kind"]
 
@@ -15,6 +16,8 @@ var owner_id: String = CribbageRound.PLAYER_ID
 var permanent: Array[PerkData] = []
 var temporary: Array[PerkData] = []
 var _hand_triggers: Dictionary = {}
+# Permanent growth earned by each MULTIPLIER perk, keyed by perk id.
+var _multiplier_growth: Dictionary = {}
 
 
 func active() -> Array[PerkData]:
@@ -47,6 +50,7 @@ func remove_perk(perk_id: String) -> bool:
 		for perk in list:
 			if perk.id == perk_id:
 				list.erase(perk)
+				_multiplier_growth.erase(perk.id)
 				perk_removed.emit(perk)
 				return true
 	return false
@@ -93,6 +97,49 @@ func target_delta() -> int:
 	return _sum(PerkData.Effect.TARGET_DELTA)
 
 
+# Current total score multiplier: 1 plus every multiplier perk's bonus.
+func multiplier() -> int:
+	var total := 1
+	for perk in active():
+		if perk.effect == PerkData.Effect.MULTIPLIER:
+			total += multiplier_bonus(perk)
+	return total
+
+
+func multiplier_bonus(perk: PerkData) -> int:
+	var bonus := perk.start_bonus + int(_multiplier_growth.get(perk.id, 0))
+	return mini(bonus, perk.max_bonus) if perk.max_bonus > 0 else bonus
+
+
+# Extra score event for the owner's multiplier applied to `base_points`; empty when there is nothing to add.
+func multiplier_event(id: String, base_points: int) -> Dictionary:
+	var factor := multiplier()
+	if id != owner_id or factor <= 1 or base_points <= 0:
+		return {}
+	var no_cards: Array[PlayingCard] = []
+	return {"type": "multiplier", "points": base_points * (factor - 1), "cards": no_cards, "description": "x%d Multiplier" % factor, "perk_id": "multiplier"}
+
+
+# Grows multiplier perks for matching events. Call after the triggering score was multiplied,
+# so growth only affects later scoring.
+func grow_multipliers(trigger: PerkData.Trigger, context: Dictionary) -> void:
+	if context.get("owner_id", owner_id) != owner_id:
+		return
+	var changed := false
+	for perk in active():
+		if perk.effect != PerkData.Effect.MULTIPLIER or perk.trigger != trigger:
+			continue
+		var matches := _matches(perk, context)
+		if matches <= 0:
+			continue
+		var before := multiplier_bonus(perk)
+		_multiplier_growth[perk.id] = int(_multiplier_growth.get(perk.id, 0)) + perk.amount * (matches if perk.per_event else 1)
+		if multiplier_bonus(perk) != before:
+			changed = true
+	if changed:
+		multiplier_changed.emit(multiplier())
+
+
 func hand_limit_delta() -> int:
 	return _sum(PerkData.Effect.HAND_LIMIT_DELTA)
 
@@ -117,6 +164,7 @@ func _expire(duration: PerkData.Duration) -> void:
 	for perk in temporary.duplicate():
 		if perk.duration == duration:
 			temporary.erase(perk)
+			_multiplier_growth.erase(perk.id)
 			perk_removed.emit(perk)
 
 

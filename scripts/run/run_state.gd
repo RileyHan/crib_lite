@@ -10,12 +10,17 @@ signal currency_changed(amount: int)
 signal stage_cleared(stage_number: int)
 signal run_finished(won: bool)
 signal perk_gained(perk: PerkData)
+signal shop_opened(shop: Shop)
+signal upgrade_shop_opened(shop: UpgradeShop)
 
 enum Phase { SELECTING, IN_ENCOUNTER, SHOP, WON, LOST, STARTER_PERK }
 
 var config: RunConfig
 var phase: Phase = Phase.SELECTING
 var perks := PerkManager.new()
+var loadout: ScoreLoadout
+var shop: Shop
+var upgrade_shop: UpgradeShop
 var starter_offer: Array[PerkData] = []
 var stage_index := 0
 var currency := 0
@@ -40,6 +45,13 @@ func _init(run_config: RunConfig, player: CardDeck, opponent: CardDeck, rng: Ran
 		_rng = RandomNumberGenerator.new()
 		_rng.randomize()
 	currency = config.starting_currency
+	if config.chips_mult:
+		loadout = ScoreLoadout.new(CribbageRound.PLAYER_ID, _rng)
+		loadout.coins_provider = func() -> int: return currency
+		for peg in config.starting_pegs:
+			loadout.add_peg(peg)
+		for relic in config.starting_relics:
+			loadout.add_relic(relic)
 	perks.perk_added.connect(func(perk: PerkData) -> void: perk_gained.emit(perk))
 	starter_offer = config.starter_offer(_rng)
 	if starter_offer.is_empty():
@@ -101,7 +113,8 @@ func select_encounter(data: EncounterData) -> Encounter:
 	if phase != Phase.SELECTING or not available_encounters().has(data):
 		return null
 	current_data = data
-	current_encounter = Encounter.new(data, player_deck, opponent_deck, CribbageRound.OPPONENT_ID, _rng, perks)
+	current_encounter = Encounter.new(data, player_deck, opponent_deck, CribbageRound.PLAYER_ID, _rng, perks)
+	current_encounter.loadout = loadout
 	phase = Phase.IN_ENCOUNTER
 	encounter_started.emit(current_encounter)
 	return current_encounter
@@ -153,6 +166,8 @@ func spend(amount: int) -> bool:
 func leave_shop() -> bool:
 	if phase != Phase.SHOP:
 		return false
+	shop = null
+	upgrade_shop = null
 	stage_index += 1
 	_begin_stage()
 	return true
@@ -178,6 +193,17 @@ func _clear_stage() -> void:
 		_end_run(true)
 	else:
 		phase = Phase.SHOP
+		_open_shop()
+
+
+func _open_shop() -> void:
+	var shop_config := config.shop_config if config.shop_config != null else ShopConfig.new()
+	if config.chips_mult:
+		upgrade_shop = UpgradeShop.new(shop_config, config.peg_pool, config.relic_pool, loadout, stage_number(), func() -> int: return currency, spend, func(amount: int) -> void: _add_currency(amount), _rng)
+		upgrade_shop_opened.emit(upgrade_shop)
+		return
+	shop = Shop.new(shop_config, config.perk_pool, perks, stage_number(), func() -> int: return currency, spend, func(amount: int) -> void: _add_currency(amount), _rng)
+	shop_opened.emit(shop)
 
 
 func _end_run(won: bool) -> void:

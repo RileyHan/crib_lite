@@ -17,3 +17,5 @@ extends Resource
 # When the player meets the target and ties the opponent, play extra hands until someone leads.
 # When disabled, such a tie counts as a loss.
 @export var sudden_death_enabled := true
+# Points the player starts the encounter with; used as an early-game handicap.
+@export var player_head_start := 0
