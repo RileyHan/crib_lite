@@ -13,6 +13,6 @@ category = "run"
 script = ExtResource("1_peg")
 id = "run_peg"
 display_name = "Run Peg"
-description = "+5 Mult for each run that scores."
+description = "+5 Multi for each run that scores."
 base_price = 5
 effects = Array[ExtResource("2_eff")]([SubResource("Resource_a")])

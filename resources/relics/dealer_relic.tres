@@ -12,6 +12,6 @@ value = 10.0
 script = ExtResource("1_rel")
 id = "dealer_relic"
 display_name = "Dealer"
-description = "+10 Chips for every scoring combination."
+description = "+10 Points for every scoring combination."
 base_price = 8
 effects = Array[ExtResource("2_eff")]([SubResource("Resource_a")])

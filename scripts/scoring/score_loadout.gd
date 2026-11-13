@@ -88,7 +88,7 @@ func bonus_event(events: Array, scope: String) -> Dictionary:
 	var extra: int = result["final_score"] - result["base_points"]
 	if extra <= 0:
 		return {}
-	var description := "Chips x Mult: %d x %s = %d" % [int(result["chips"]), _format(result["mult"]), result["final_score"]]
+	var description := "Points x Multi: %d x %s = %d" % [int(result["chips"]), _format(result["mult"]), result["final_score"]]
 	return {"type": "chips_mult", "points": extra, "cards": [] as Array[PlayingCard], "description": description, "breakdown": result}
 
 

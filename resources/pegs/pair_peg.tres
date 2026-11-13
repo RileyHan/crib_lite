@@ -13,6 +13,6 @@ category = "pair"
 script = ExtResource("1_peg")
 id = "pair_peg"
 display_name = "Pair Peg"
-description = "+2 Mult whenever a pair, three or four of a kind scores."
+description = "+2 Multi whenever a pair, three or four of a kind scores."
 base_price = 4
 effects = Array[ExtResource("2_eff")]([SubResource("Resource_a")])

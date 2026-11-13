@@ -13,6 +13,6 @@ category = "fifteen"
 script = ExtResource("1_peg")
 id = "fifteen_peg"
 display_name = "Fifteen Peg"
-description = "+3 Mult whenever a fifteen scores."
+description = "+3 Multi whenever a fifteen scores."
 base_price = 4
 effects = Array[ExtResource("2_eff")]([SubResource("Resource_a")])

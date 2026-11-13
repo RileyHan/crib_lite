@@ -30,6 +30,17 @@ func _shop_run(seed_value: int, currency: int) -> RunState:
 
 
 func _initialize() -> void:
+	var fresh := RunState.new(config, DeckScript.new("player"), DeckScript.new("opponent"))
+	var first := fresh.available_encounters()[0]
+	_check(fresh.can_skip(first), true, "a regular blind can be skipped")
+	_check(fresh.can_skip(fresh.boss_encounter), false, "the boss cannot be skipped")
+	var coins_before := fresh.currency
+	_check(fresh.skip_encounter(first), true, "skip succeeds")
+	_check(fresh.currency, coins_before + config.skip_reward, "skip pays the skip reward")
+	_check(fresh.available_encounters().has(first), false, "skipped blind is gone")
+	_check(fresh.boss_unlocked(), true, "skipping unlocks the boss")
+	var second := fresh.available_encounters()[0]
+	_check(fresh.can_skip(second), false, "skips are limited per stage")
 	var run := _shop_run(3, 100)
 	_check(run.starter_offer.is_empty(), true, "no starter perks in Chips x Mult")
 	_check(run.phase, RunState.Phase.SHOP, "run is in the shop")

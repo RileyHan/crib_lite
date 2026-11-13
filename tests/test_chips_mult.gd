@@ -47,7 +47,7 @@ func _test_loadout() -> void:
 	var bonus := loadout.bonus_event(events, "hand")
 	_check(bonus["points"], 6, "2 chips x 4 mult = 8, so +6")
 	_check(bonus["type"], "chips_mult", "bonus event type")
-	_check(bonus["description"], "Chips x Mult: 2 x 4 = 8", "bonus description")
+	_check(bonus["description"], "Points x Multi: 2 x 4 = 8", "bonus description")
 	_check(loadout.bonus_event([{"type": "pair", "points": 2, "cards": [], "description": ""}], "hand").is_empty(), true, "non-matching event adds nothing")
 
 

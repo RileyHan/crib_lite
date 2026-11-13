@@ -31,6 +31,7 @@ var current_data: EncounterData
 var regular_encounters: Array[EncounterData] = []
 var boss_encounter: EncounterData
 var completed_ids: Array[String] = []
+var skips_this_stage := 0
 var player_deck: CardDeck
 var opponent_deck: CardDeck
 var _rng: RandomNumberGenerator
@@ -109,6 +110,22 @@ func boss_unlocked() -> bool:
 	return completed_in_stage() >= config.min_encounters_per_stage - 1
 
 
+# Only regular encounters can be skipped, a limited number of times per stage, and never the last unplayed one.
+func can_skip(data: EncounterData) -> bool:
+	if phase != Phase.SELECTING or is_boss(data) or not available_encounters().has(data):
+		return false
+	return skips_this_stage < config.max_skips_per_stage and completed_in_stage() + 1 < regular_encounters.size()
+
+
+func skip_encounter(data: EncounterData) -> bool:
+	if not can_skip(data):
+		return false
+	completed_ids.append(data.id)
+	skips_this_stage += 1
+	_add_currency(config.skip_reward)
+	return true
+
+
 func select_encounter(data: EncounterData) -> Encounter:
 	if phase != Phase.SELECTING or not available_encounters().has(data):
 		return null
@@ -182,6 +199,7 @@ func _begin_stage() -> void:
 	var stage := config.build_stage(stage_index, _rng)
 	regular_encounters.assign(stage["regular"])
 	boss_encounter = stage["boss"]
+	skips_this_stage = 0
 	phase = Phase.SELECTING
 	stage_started.emit(stage_number())
 

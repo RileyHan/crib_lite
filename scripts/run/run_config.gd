@@ -33,6 +33,9 @@ extends Resource
 # Pegs and relics the Chips x Mult shop can sell.
 @export var peg_pool: Array[PegData] = []
 @export var relic_pool: Array[RelicData] = []
+# Skipping a regular encounter counts it as cleared (so the boss can unlock) but pays only this much.
+@export var max_skips_per_stage := 1
+@export var skip_reward := 2
 
 
 # Random selection of starter perks from the pool; empty when the pool has none or in Chips x Mult mode, which retires perks.

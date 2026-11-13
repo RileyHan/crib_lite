@@ -14,6 +14,6 @@ per_coins = 5
 script = ExtResource("1_rel")
 id = "accountant_relic"
 display_name = "Accountant"
-description = "+2 Mult for every 5 coins held."
+description = "+2 Multi for every 5 coins held."
 base_price = 8
 effects = Array[ExtResource("2_eff")]([SubResource("Resource_a")])
