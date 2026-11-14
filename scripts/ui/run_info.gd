@@ -6,8 +6,8 @@ extends RefCounted
 
 static func build_text(run: RunState) -> String:
 	var lines: Array[String] = []
-	lines.append("[b]Ante (stage):[/b] %d / %d" % [mini(run.stage_number(), run.config.stage_count), run.config.stage_count])
-	lines.append("[b]Coins:[/b] %d     [b]Encounters won:[/b] %d" % [run.currency, run.encounters_won])
+	lines.append("[b]Round:[/b] %d / %d" % [mini(run.stage_number(), run.config.stage_count), run.config.stage_count])
+	lines.append("[b]Winnings:[/b] $%d     [b]Matches won:[/b] %d" % [run.currency, run.encounters_won])
 	if run.loadout != null:
 		lines.append("\n[b][color=skyblue]Pegs[/color][/b]")
 		for peg in run.loadout.pegs:

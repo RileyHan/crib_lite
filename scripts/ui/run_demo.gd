@@ -55,13 +55,17 @@ func _build_layout() -> void:
 # Balatro-style left sidebar: prompt, Run Info / Options buttons, coins, ante and round.
 func _build_sidebar() -> Control:
 	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(240, 0)
+	panel.custom_minimum_size = Vector2(300, 0)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color("22282b")
 	panel.add_theme_stylebox_override("panel", style)
+	var pad := MarginContainer.new()
+	for side in ["left", "right", "top", "bottom"]:
+		pad.add_theme_constant_override("margin_" + side, 12)
+	panel.add_child(pad)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 10)
-	panel.add_child(box)
+	pad.add_child(box)
 	sidebar_prompt = Label.new()
 	sidebar_prompt.add_theme_font_size_override("font_size", 22)
 	sidebar_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -73,9 +77,9 @@ func _build_sidebar() -> Control:
 	buttons.add_child(_sidebar_button("Run Info", Color("e04a3f"), func() -> void: RunInfo.show(self, run)))
 	buttons.add_child(_sidebar_button("Options", Color("f29a1f"), func() -> void: get_tree().change_scene_to_file("res://scenes/main/main_menu.tscn")))
 	box.add_child(buttons)
-	sidebar_coins = _sidebar_stat("Coins", Color("ffd54a"), box)
-	sidebar_ante = _sidebar_stat("Ante", Color("f29a1f"), box)
-	sidebar_round = _sidebar_stat("Round", Color("f29a1f"), box)
+	sidebar_coins = _sidebar_stat("Winnings", Color("ffd54a"), box)
+	sidebar_ante = _sidebar_stat("Round", Color("f29a1f"), box)
+	sidebar_round = _sidebar_stat("Match", Color("f29a1f"), box)
 	return panel
 
 
@@ -120,7 +124,7 @@ func _new_run() -> void:
 
 
 func _refresh() -> void:
-	header.text = "Stage %d of %d   |   Currency: %d   |   Encounters won: %d" % [mini(run.stage_number(), CONFIG.stage_count), CONFIG.stage_count, run.currency, run.encounters_won]
+	header.text = "Round %d of %d   |   Winnings: $%d" % [mini(run.stage_number(), CONFIG.stage_count), CONFIG.stage_count, run.currency]
 	sidebar_coins.text = "$%d" % run.currency
 	sidebar_ante.text = "%d / %d" % [mini(run.stage_number(), CONFIG.stage_count), CONFIG.stage_count]
 	sidebar_round.text = str(run.encounters_won)
@@ -145,7 +149,7 @@ func _refresh() -> void:
 			for perk in run.starter_offer:
 				_add_button("%s  -  %s" % [perk.display_name, perk.description], _choose_starter.bind(perk))
 		RunState.Phase.SELECTING:
-			_add_label("Beat the boss to clear the stage. Skipping a blind pays a small bonus instead of the full reward.")
+			_add_label("Beat The Skunk to clear the round. Skipping a blind pays a small bonus instead of the full reward.")
 			_build_blinds()
 		RunState.Phase.IN_ENCOUNTER:
 			_add_label("You lost %s." % run.current_data.display_name)
@@ -184,14 +188,14 @@ func _build_blinds() -> void:
 	options_box.add_child(row)
 	var available := run.available_encounters()
 	var colors := [Color("2a74c8"), Color("c8962a"), Color("a84aa8")]
-	var titles := ["Small Blind", "Big Blind"]
+	var titles := ["Warm-up", "The Cut"]
 	var stage_list: Array[EncounterData] = []
 	stage_list.append_array(run.regular_encounters)
 	stage_list.append(run.boss_encounter)
 	for index in stage_list.size():
 		var data := stage_list[index]
 		var color: Color = colors[2] if run.is_boss(data) else colors[mini(index, 1)]
-		var title: String = "Boss Blind" if run.is_boss(data) else titles[mini(index, 1)]
+		var title: String = "The Skunk" if run.is_boss(data) else titles[mini(index, 1)]
 		row.add_child(_blind_card(data, title, color, available.has(data)))
 
 
@@ -257,30 +261,47 @@ func _skip(data: EncounterData) -> void:
 func _add_label(text: String) -> void:
 	var label := Label.new()
 	label.text = text
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	options_box.add_child(label)
 
 
 func _build_shop() -> void:
-	_add_label("Stage %d cleared! Spend your %d coins on pegs and relics." % [run.stages_cleared, run.currency])
+	_add_label("Round %d cleared! Spend your $%d winnings on pegs and relics." % [run.stages_cleared, run.currency])
 	var shop := run.upgrade_shop
 	if shop == null:
-		_add_button("Leave shop", _leave_shop)
+		_shop_button("Leave shop", Color("c0392b"), _leave_shop)
 		return
 	for item in shop.offers:
-		var text := "Buy %s: %s [%s]  -  %s  -  %d coins" % [UpgradeShop.kind_of(item), item.display_name, _rarity_name(item), item.description, shop.price_of(item)]
-		var button := _add_button(text, _buy.bind(item))
-		button.disabled = not shop.can_buy(item)
+		var text := "Buy %s: %s [%s]\n%s  -  $%d" % [UpgradeShop.kind_of(item), item.display_name, _rarity_name(item), item.description, shop.price_of(item)]
+		_shop_button(text, Color("2e9e4f"), _buy.bind(item)).disabled = not shop.can_buy(item)
 	if shop.offers.is_empty():
 		_add_label("Sold out.")
-	var reroll := _add_button("Reroll offers (%d coins)" % shop.reroll_cost(), _reroll)
-	reroll.disabled = not shop.can_reroll()
+	_shop_button("Reroll offers ($%d)" % shop.reroll_cost(), Color("d4a017"), _reroll).disabled = not shop.can_reroll()
 	var owned: Array[Resource] = []
 	owned.append_array(run.loadout.pegs)
 	owned.append_array(run.loadout.relics)
 	for item in owned:
-		var sell := _add_button("Sell %s: %s  -  +%d coins" % [UpgradeShop.kind_of(item), item.display_name, shop.sell_price_of(item)], _sell.bind(item))
-		sell.disabled = not shop.can_sell(item)
-	_add_button("Leave shop", _leave_shop)
+		var text := "Sell %s: %s  -  +$%d" % [UpgradeShop.kind_of(item), item.display_name, shop.sell_price_of(item)]
+		_shop_button(text, Color("e07b1a"), _sell.bind(item)).disabled = not shop.can_sell(item)
+	_shop_button("Leave shop", Color("c0392b"), _leave_shop)
+
+
+func _shop_button(text: String, color: Color, callback: Callable) -> Button:
+	var button := _add_button(text, callback)
+	button.custom_minimum_size = Vector2(640, 48)
+	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	for state in ["normal", "hover", "pressed"]:
+		var style := StyleBoxFlat.new()
+		style.bg_color = color if state == "normal" else color.lightened(0.15)
+		style.set_corner_radius_all(6)
+		style.content_margin_left = 12
+		style.content_margin_right = 12
+		button.add_theme_stylebox_override(state, style)
+	var off := StyleBoxFlat.new()
+	off.bg_color = color.darkened(0.55)
+	off.set_corner_radius_all(6)
+	button.add_theme_stylebox_override("disabled", off)
+	return button
 
 
 func _rarity_name(item: Resource) -> String:

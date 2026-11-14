@@ -453,7 +453,7 @@ func _update_scores() -> void:
 				sb_round.text = "Round score  %d / %d" % [encounter.totals[id] + live, encounter.target_score()]
 				sb_info.text = "Hands left %d   |   Pegging +%d" % [encounter.hands_remaining(), hand_pegging[id]]
 				if run != null:
-					sb_info.text += "\nCoins $%d   |   Ante %d/%d" % [run.currency, mini(run.stage_number(), run.config.stage_count), run.config.stage_count]
+					sb_info.text += "\nWinnings $%d   |   Round %d/%d" % [run.currency, mini(run.stage_number(), run.config.stage_count), run.config.stage_count]
 		if id == CribbageRound.PLAYER_ID and encounter.perks != null and encounter.perks.multiplier() > 1:
 			text += "\nMultiplier: x%d" % encounter.perks.multiplier()
 		score_labels[id].text = text
