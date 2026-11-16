@@ -7,13 +7,12 @@
 script = ExtResource("2_eff")
 kind = 1
 value = 1.0
-scale_by_points = true
 
 [resource]
 script = ExtResource("1_peg")
 id = "the_dealer_peg"
 display_name = "The Dealer"
-description = "Every scoring combination adds its cribbage points to Multi."
-rarity = 3
-base_price = 20
+description = "Every scoring combination adds +1 Multi."
+rarity = 2
+base_price = 12
 effects = Array[ExtResource("2_eff")]([SubResource("Resource_a")])

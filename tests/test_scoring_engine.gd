@@ -72,32 +72,32 @@ func _test_basics() -> void:
 
 func _test_pegs() -> void:
 	var r := _score([["fifteen", 2], ["fifteen", 2]], ["fifteen_peg"], [])
-	_check(r["mult"], 7.0, "fifteen peg +3 per fifteen")
-	_check(r["final_score"], 28, "4 chips x 7 mult")
+	_check(r["mult"], 3.0, "fifteen peg +1 per fifteen")
+	_check(r["final_score"], 12, "4 chips x 3 mult")
 	var none := _score([["pair", 2]], ["fifteen_peg"], [])
 	_check(none["mult"], 1.0, "peg ignores non-matching events")
 	var trio := _score([["three_of_a_kind", 6]], ["pair_peg"], [])
-	_check(trio["mult"], 3.0, "pair peg matches three of a kind")
+	_check(trio["mult"], 2.0, "pair peg matches three of a kind")
 	var nobs := _score([["nobs", 1]], ["nobs_peg"], [])
 	_check(nobs["final_score"], 2, "nobs peg x2")
 	var order := _score([["run", 3], ["fifteen", 2]], ["nobs_peg", "run_peg"], [])
-	_check(order["mult"], 6.0, "additive pegs apply once each")
+	_check(order["mult"], 2.0, "additive pegs apply once each")
 	var dbl := _score([["run", 3]], ["double_run_peg"], [])
-	_check(dbl["mult"], 7.5, "double run: (1+4) x 1.5")
+	_check(dbl["mult"], 3.0, "double run: 1+1+1")
 	var multi_after := _score([["run", 3]], ["double_run_peg", "run_peg"], [])
-	_check(multi_after["mult"], 15.0, "additive pegs resolve before multiplicative: (1+4+5) x 1.5")
+	_check(multi_after["mult"], 4.0, "double run and run pegs stack: 1+1+1+1")
 	var runner := _score([["run", 3], ["run", 3], ["run", 3]], ["the_runner_peg"], [])
-	_check(runner["mult"], 1.0 + 2.0 + 4.0 + 6.0, "runner peg grows per run")
+	_check(runner["mult"], 1.0 + 1.0 + 2.0 + 3.0, "runner peg grows per run")
 	var dealer := _score([["fifteen", 2], ["pair", 2]], ["the_dealer_peg"], [])
-	_check(dealer["mult"], 5.0, "dealer peg adds event points to mult")
+	_check(dealer["mult"], 3.0, "dealer peg adds event points to mult")
 	var skunk_low := _score([["fifteen", 2]], ["the_skunk_peg"], [])
 	_check(skunk_low["mult"], 1.0, "skunk peg needs 15 points")
 	var skunk := _score([["fifteen", 8], ["run", 8]], ["the_skunk_peg"], [])
-	_check(skunk["mult"], 3.0, "skunk peg x3 at 15+")
+	_check(skunk["mult"], 4.0, "skunk peg +3 at 15+")
 	var crib_hand := _score([["fifteen", 2]], ["crib_peg"], [], {"scope": "hand"})
 	_check(crib_hand["mult"], 1.0, "crib peg ignores hand scoring")
 	var crib := _score([["fifteen", 2]], ["crib_peg"], [], {"scope": "crib"})
-	_check(crib["mult"], 2.0, "crib peg doubles crib scoring")
+	_check(crib["mult"], 4.0, "crib peg +3 mult on crib scoring")
 
 
 func _test_relics() -> void:
@@ -108,21 +108,25 @@ func _test_relics() -> void:
 	var cut_low := _score([["fifteen", 2]], [], ["cutthroat_relic"])
 	_check(cut_low["mult"], 1.0, "cutthroat inactive under 15")
 	var acct := _score([["fifteen", 2]], [], ["accountant_relic"], {"coins": 12})
-	_check(acct["mult"], 5.0, "accountant +2 mult per 5 coins")
+	_check(acct["mult"], 3.0, "accountant +1 mult per 5 coins")
 	var broke := _score([["fifteen", 2]], [], ["accountant_relic"], {"coins": 3})
 	_check(broke["mult"], 1.0, "accountant needs 5 coins")
 	var runs := _score([["run", 3], ["run", 3]], [], ["runner_relic"])
 	_check(runs["mult"], 4.0, "runner relic x2 per run")
 	var pairs := _score([["pair", 2]], [], ["pairadox_relic"])
 	_check(pairs["mult"], 2.0, "pairadox x2 per pair")
+	var many_pairs := _score([["pair", 2], ["pair", 2], ["pair", 2], ["pair", 2]], [], ["pairadox_relic"])
+	_check(many_pairs["mult"], 4.0, "pairadox stops after two activations")
+	var many_runs := _score([["run", 3], ["run", 3], ["run", 3], ["run", 3]], [], ["runner_relic"])
+	_check(many_runs["mult"], 4.0, "runner relic stops after two activations")
 
 
 func _test_combined_example() -> void:
 	var events := [["fifteen", 2], ["fifteen", 2], ["run", 3], ["run", 3], ["pair", 2], ["nobs", 1]]
 	var r := _score(events, ["fifteen_peg", "run_peg", "pair_peg"], ["runner_relic", "pairadox_relic"])
 	_check(r["chips"], 13.0, "example chips")
-	_check(r["mult"], 152.0, "example mult: (1+6+10+2) x 4 x 2")
-	_check(r["final_score"], 1976, "example final 13 x 152")
+	_check(r["mult"], 48.0, "example mult: (1+2+2+1) x 4 x 2")
+	_check(r["final_score"], 624, "example final 13 x 48")
 
 
 func _test_chance_and_steps() -> void:
@@ -131,10 +135,10 @@ func _test_chance_and_steps() -> void:
 		var rng := RandomNumberGenerator.new()
 		rng.seed = seed_value
 		var r := _score([["pair", 2]], ["lucky_pair_peg"], [], {"rng": rng})
-		if r["mult"] == 3.0:
+		if r["mult"] == 2.0:
 			always += 1
 		else:
-			_check(r["mult"], 1.0, "lucky pair is x1 or x3")
+			_check(r["mult"], 1.0, "lucky pair is x1 or x2")
 	_check(always > 0 and always < 40, true, "lucky pair is chance based")
 	var a := RandomNumberGenerator.new()
 	a.seed = 99
@@ -146,7 +150,7 @@ func _test_chance_and_steps() -> void:
 	var steps: Array = _score([["fifteen", 2]], ["fifteen_peg"], ["cutthroat_relic"], {})["steps"]
 	_check(steps.size(), 1, "one activation recorded")
 	_check(steps[0]["source_id"], "fifteen_peg", "step names its source")
-	_check(steps[0]["mult"], 4.0, "step records running mult")
+	_check(steps[0]["mult"], 2.0, "step records running mult")
 	_check(floori(2.7), 2, "floor rounding sanity")
 	var floored := _score([["run", 3]], ["double_run_peg"], [])
-	_check(floored["final_score"], floori(3.0 * 7.5), "final is floored")
+	_check(floored["final_score"], floori(3.0 * 3.0), "final is floored")

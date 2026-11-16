@@ -16,14 +16,15 @@ const PHASE_ADDITIVE: Array[int] = [ScoreEffectData.Kind.CHIPS, ScoreEffectData.
 const PHASE_MULTIPLICATIVE: Array[int] = [ScoreEffectData.Kind.TIMES_MULT]
 
 
-# context keys: scope ("hand", "crib" or "pegging"), coins (int), rng (RandomNumberGenerator).
+# context keys: scope ("hand", "crib" or "pegging"), coins (int), rng (RandomNumberGenerator), and optionally
+# start_mult to carry the running Multi over from earlier scoring in the same hand (Points never carry).
 static func score(events: Array, pegs: Array, relics: Array, context: Dictionary = {}) -> Dictionary:
 	var base_points := 0
 	for event in events:
 		base_points += int(event["points"])
 	var state := {
 		"chips": float(base_points),
-		"mult": 1.0,
+		"mult": float(context.get("start_mult", 1.0)),
 		"steps": [] as Array[Dictionary],
 		"counts": {},
 		"base_points": base_points,
@@ -43,6 +44,7 @@ static func score(events: Array, pegs: Array, relics: Array, context: Dictionary
 		"mult": state["mult"],
 		"final_score": floori(state["chips"] * state["mult"]),
 		"base_points": base_points,
+		"start_mult": float(context.get("start_mult", 1.0)),
 		"steps": state["steps"],
 	}
 

@@ -13,7 +13,7 @@ signal perk_gained(perk: PerkData)
 signal shop_opened(shop: Shop)
 signal upgrade_shop_opened(shop: UpgradeShop)
 
-enum Phase { SELECTING, IN_ENCOUNTER, SHOP, WON, LOST, STARTER_PERK }
+enum Phase { SELECTING, IN_ENCOUNTER, SHOP, WON, LOST, STARTER_PERK, STARTER_PEG }
 
 var config: RunConfig
 var phase: Phase = Phase.SELECTING
@@ -22,6 +22,7 @@ var loadout: ScoreLoadout
 var shop: Shop
 var upgrade_shop: UpgradeShop
 var starter_offer: Array[PerkData] = []
+var starter_peg_offer: Array[PegData] = []
 var stage_index := 0
 var currency := 0
 var encounters_won := 0
@@ -55,10 +56,23 @@ func _init(run_config: RunConfig, player: CardDeck, opponent: CardDeck, rng: Ran
 			loadout.add_relic(relic)
 	perks.perk_added.connect(func(perk: PerkData) -> void: perk_gained.emit(perk))
 	starter_offer = config.starter_offer(_rng)
-	if starter_offer.is_empty():
+	starter_peg_offer = config.starter_peg_offer(_rng)
+	if not starter_peg_offer.is_empty():
+		phase = Phase.STARTER_PEG
+	elif starter_offer.is_empty():
 		_begin_stage()
 	else:
 		phase = Phase.STARTER_PERK
+
+
+# Chips x Mult mode: takes the chosen starting peg and begins the first stage.
+func choose_starter_peg(peg: PegData) -> bool:
+	if phase != Phase.STARTER_PEG or not starter_peg_offer.has(peg):
+		return false
+	loadout.add_peg(peg)
+	starter_peg_offer.clear()
+	_begin_stage()
+	return true
 
 
 # Takes the free starter perk and begins the first stage.

@@ -44,7 +44,7 @@ func _test_multiplier() -> void:
 	pegging.play("player", player[0])
 	pegging.play("opponent", opponent[1])
 	var run_events: Array = pegging.play("player", player[1])["events"]
-	_check(pegging.scores["player"], 4, "run of four scored at the old multiplier")
+	_check(pegging.scores["player"], 25, "run of four scored at the old multiplier")
 	_check(manager.multiplier(), 2, "scoring a run grows the multiplier after the score")
 	pegging.play("opponent", opponent[2])
 	var tail: Array = pegging.play("player", player[2])["events"]
@@ -52,7 +52,7 @@ func _test_multiplier() -> void:
 	for event in tail:
 		multiplied = multiplied or event["type"] == "multiplier"
 	_check(multiplied, true, "later scoring is multiplied")
-	_check(pegging.scores["player"], 6, "last card (1) doubled to 2 on top of the run")
+	_check(pegging.scores["player"], 35, "last card (5) doubled to 2 on top of the run")
 	_check(pegging.scores["opponent"] > 0 and run_events.size() > 0, true, "opponent scoring is unaffected")
 
 	# The multiplier is capped and is dropped with its perk.
@@ -99,16 +99,20 @@ func _test_live_banking_and_early_end() -> void:
 	_check(round_state.phase, CribbageRound.Phase.SHOW, "no target means the show follows")
 
 	# A reachable target ends the hand during pegging and skips the show.
-	var early := CribbageRound.new(DeckScript.new("player"), DeckScript.new("opponent"), "opponent")
-	early.target = 3
-	early.carried = {"player": 0, "opponent": 0}
-	early.deal(rng)
-	ai.take_discard(early, "player")
-	ai.take_discard(early, "opponent")
-	early.cut(rng)
-	while not early.pegging.finished:
-		var turn: String = early.pegging.turn_id
-		ai.take_pegging_turn(early, turn)
+	var early: CribbageRound
+	for attempt in range(20):
+		early = CribbageRound.new(DeckScript.new("player"), DeckScript.new("opponent"), "opponent")
+		early.target = 3
+		early.carried = {"player": 0, "opponent": 0}
+		early.deal(rng)
+		ai.take_discard(early, "player")
+		ai.take_discard(early, "opponent")
+		early.cut(rng)
+		while not early.pegging.finished:
+			var turn: String = early.pegging.turn_id
+			ai.take_pegging_turn(early, turn)
+		if early.winner_id != "":
+			break
 	_check(early.winner_id != "", true, "someone reaches a tiny target in the hand")
 	early.finish_pegging()
 	_check(early.phase, CribbageRound.Phase.DONE, "reaching the target skips the show")

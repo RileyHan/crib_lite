@@ -141,7 +141,7 @@ func _set_points_multi(points: float, multi: float) -> void:
 # Counts the Points x Multi box up one peg or relic at a time, ending on the total.
 func _animate_breakdown(breakdown: Dictionary) -> void:
 	sb_total.text = ""
-	_set_points_multi(breakdown["base_points"], 1.0)
+	_set_points_multi(breakdown["base_points"], breakdown["start_mult"])
 	await _pause(0.4)
 	for step in breakdown["steps"]:
 		_set_points_multi(step["chips"], step["mult"])
@@ -380,7 +380,7 @@ func _finish_round() -> void:
 	encounter.finish_hand()
 	round_banked = true
 	if _chips_mult_mode():
-		_log("[b]Hand %d result:[/b] +%d   |   Total: %d / %d" % [hand_number, round_state.scores[CribbageRound.PLAYER_ID], encounter.totals[CribbageRound.PLAYER_ID], encounter.target_score()])
+		_log("[b]Hand %d result:[/b] %s +%d, %s +%d   |   Total: %d / %d  (opponent %d)" % [hand_number, _tag(CribbageRound.PLAYER_ID), round_state.scores[CribbageRound.PLAYER_ID], _tag(CribbageRound.OPPONENT_ID), round_state.scores[CribbageRound.OPPONENT_ID], encounter.totals[CribbageRound.PLAYER_ID], encounter.target_score(), encounter.totals[CribbageRound.OPPONENT_ID]])
 	else:
 		_log("[b]Hand %d result:[/b] %s +%d, %s +%d   |   Game: %d - %d" % [hand_number, _tag(CribbageRound.PLAYER_ID), round_state.scores[CribbageRound.PLAYER_ID], _tag(CribbageRound.OPPONENT_ID), round_state.scores[CribbageRound.OPPONENT_ID], encounter.totals[CribbageRound.PLAYER_ID], encounter.totals[CribbageRound.OPPONENT_ID]])
 	match encounter.outcome:
@@ -442,14 +442,11 @@ func _show_pile(cards: Array[PlayingCard], count: int) -> void:
 
 func _update_scores() -> void:
 	for id in score_labels:
-		if id == CribbageRound.OPPONENT_ID and _chips_mult_mode():
-			score_labels[id].visible = false
-			continue
 		var live: int = 0 if round_banked else round_state.scores[id]
 		var text := "%s\nPegging: %d\nGame: %d" % [_name(id), hand_pegging[id], encounter.totals[id] + live]
 		if _chips_mult_mode():
-			text += " / %d" % encounter.target_score()
 			if id == CribbageRound.PLAYER_ID:
+				text += " / %d" % encounter.target_score()
 				sb_round.text = "Round score  %d / %d" % [encounter.totals[id] + live, encounter.target_score()]
 				sb_info.text = "Hands left %d   |   Pegging +%d" % [encounter.hands_remaining(), hand_pegging[id]]
 				if run != null:
@@ -528,7 +525,7 @@ func _breakdown_text(breakdown: Dictionary) -> String:
 
 
 func _log_breakdown(breakdown: Dictionary, indent: String) -> void:
-	_log("%sBase: [color=skyblue]%d points[/color] x [color=tomato]1 multi[/color]" % [indent, breakdown["base_points"]])
+	_log("%sBase: [color=skyblue]%d points[/color] x [color=tomato]%s multi[/color]" % [indent, breakdown["base_points"], ScoreLoadout._format(breakdown["start_mult"])])
 	for step in breakdown["steps"]:
 		var is_chips: bool = step["kind"] == ScoreEffectData.Kind.CHIPS
 		var sign := "x" if step["kind"] == ScoreEffectData.Kind.TIMES_MULT else "+"

@@ -14,6 +14,9 @@ var relics: Array[RelicData] = []
 # Returns the owner's current coins; used by coin-scaling effects.
 var coins_provider: Callable
 var rng: RandomNumberGenerator
+# Multi carries through the current hand (pegging, the hand, then the crib); Points restart at each scoring moment.
+var hand_mult := 1.0
+var hand_banked := 0
 
 
 func _init(id: String = "player", random: RandomNumberGenerator = null) -> void:
@@ -22,6 +25,16 @@ func _init(id: String = "player", random: RandomNumberGenerator = null) -> void:
 	if rng == null:
 		rng = RandomNumberGenerator.new()
 		rng.randomize()
+
+
+# Starts a fresh pool; called when the cut is made.
+func begin_hand() -> void:
+	hand_mult = 1.0
+	hand_banked = 0
+
+
+func hand_total() -> int:
+	return hand_banked
 
 
 func add_peg(peg: PegData) -> void:
@@ -72,7 +85,7 @@ func evaluate(events: Array, scope: String) -> Dictionary:
 	var coins := 0
 	if coins_provider.is_valid():
 		coins = int(coins_provider.call())
-	return ScoringEngine.score(events, pegs, relics, {"scope": scope, "coins": coins, "rng": rng})
+	return ScoringEngine.score(events, pegs, relics, {"scope": scope, "coins": coins, "rng": rng, "start_mult": hand_mult})
 
 
 # Extra scoring event for the given events, or {} when the upgrades add nothing.
@@ -84,8 +97,10 @@ func bonus_event(events: Array, scope: String) -> Dictionary:
 	if scoring.is_empty() or not has_modifiers():
 		return {}
 	var result := evaluate(scoring, scope)
+	hand_mult = result["mult"]
 	scored.emit(result, scope)
 	var extra: int = result["final_score"] - result["base_points"]
+	hand_banked += result["base_points"] + maxi(extra, 0)
 	if extra <= 0:
 		return {}
 	var description := "Points x Multi: %d x %s = %d" % [int(result["chips"]), _format(result["mult"]), result["final_score"]]

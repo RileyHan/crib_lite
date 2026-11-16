@@ -5,7 +5,7 @@
 
 [sub_resource type="Resource" id="Resource_a"]
 script = ExtResource("2_eff")
-kind = 2
+kind = 1
 value = 3.0
 timing = 1
 min_hand_points = 15
@@ -14,7 +14,7 @@ min_hand_points = 15
 script = ExtResource("1_peg")
 id = "the_skunk_peg"
 display_name = "The Skunk"
-description = "x3 Multi when the hand scores 15 or more cribbage points."
-rarity = 3
-base_price = 20
+description = "+3 Multi when the hand scores 15 or more cribbage points."
+rarity = 2
+base_price = 12
 effects = Array[ExtResource("2_eff")]([SubResource("Resource_a")])

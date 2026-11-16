@@ -46,14 +46,14 @@ func _play(p: Pegging, id: String, card: PlayingCard, label: String) -> Array[Di
 
 
 func _initialize() -> void:
-	_check(_static_score([7, 8], 15), 2, "fifteen")
-	_check(_static_score([10, 10, 10, 1], 31), 2, "thirty-one")
-	_check(_static_score([4, 9, 9], 22), 2, "pair")
-	_check(_static_score([9, 9, 9], 27), 6, "pair royal")
-	_check(_static_score([2, 2, 2, 2], 8), 12, "double pair royal")
-	_check(_static_score([2, 3, 3], 8), 2, "pair without run")
-	_check(_static_score([4, 2, 3], 9), 3, "run of three in any order")
-	_check(_static_score([9, 3, 4, 5, 6], 27), 4, "run of four uses longest tail")
+	_check(_static_score([7, 8], 15), 5, "fifteen")
+	_check(_static_score([10, 10, 10, 1], 31), 10, "thirty-one")
+	_check(_static_score([4, 9, 9], 22), 10, "pair")
+	_check(_static_score([9, 9, 9], 27), 25, "pair royal")
+	_check(_static_score([2, 2, 2, 2], 8), 100, "double pair royal")
+	_check(_static_score([2, 3, 3], 8), 10, "pair without run")
+	_check(_static_score([4, 2, 3], 9), 15, "run of three in any order")
+	_check(_static_score([9, 3, 4, 5, 6], 27), 25, "run of four uses longest tail")
 	_check(_static_score([3, 4, 6], 13), 0, "broken run")
 	_check(_static_score([3, 4, 5, 9], 21), 0, "run must end at last card")
 
@@ -64,12 +64,12 @@ func _initialize() -> void:
 	_check(p.play("b", b_hand[0])["ok"], false, "cannot play out of turn")
 	_check(p.play("a", b_hand[0])["ok"], false, "cannot play another player's card")
 	_play(p, "a", a_hand[0], "a opens")
-	_check(_total(_play(p, "b", b_hand[0], "b pairs")), 2, "pair points")
-	_check(_total(_play(p, "a", a_hand[0], "a plays pair royal")), 8, "pair royal plus fifteen")
+	_check(_total(_play(p, "b", b_hand[0], "b pairs")), 10, "pair points")
+	_check(_total(_play(p, "a", a_hand[0], "a plays pair royal")), 30, "pair royal plus fifteen")
 	_check(p.turn_id, "b", "turn passes to b")
 	_play(p, "b", b_hand[0], "b plays last card")
-	_check(p.scores["a"], 8, "a pegging score")
-	_check(p.scores["b"], 3, "b pair plus last card")
+	_check(p.scores["a"], 30, "a pegging score")
+	_check(p.scores["b"], 15, "b pair plus last card")
 	_check(p.finished, true, "pegging finished")
 
 	p = PeggingScript.new({"a": _cards("a", [[13, C], [13, D]]), "b": _cards("b", [[12, C], [12, D]])}, "a")
@@ -82,12 +82,12 @@ func _initialize() -> void:
 	for event in go_events:
 		types.append(event["type"])
 	_check(types, ["go_said", "go"] as Array[String], "go sequence")
-	_check(p.scores["a"], 1, "go awards one point")
+	_check(p.scores["a"], 5, "go awards one point")
 	_check(p.count, 0, "count resets after go")
 	_check(p.turn_id, "b", "player who did not play last leads")
 	var last_events := _play(p, "b", go_b[0], "go 4")
-	_check(_total(last_events), 1, "last card point")
-	_check(p.scores["b"], 1, "b last card")
+	_check(_total(last_events), 5, "last card point")
+	_check(p.scores["b"], 5, "b last card")
 	_check(p.finished, true, "go game finished")
 
 	p = PeggingScript.new({"a": _cards("a", [[13, C], [13, D]]), "b": _cards("b", [[12, C], [1, C]])}, "a")
@@ -96,8 +96,8 @@ func _initialize() -> void:
 	_play(p, "a", th_a[0], "31 1")
 	_play(p, "b", th_b[0], "31 2")
 	_play(p, "a", th_a[0], "31 3")
-	_check(_total(_play(p, "b", th_b[0], "31 4")), 2, "thirty-one scores two with no extra last card")
-	_check(p.scores["b"], 2, "b score after thirty-one")
+	_check(_total(_play(p, "b", th_b[0], "31 4")), 10, "thirty-one scores two with no extra last card")
+	_check(p.scores["b"], 10, "b score after thirty-one")
 	_check(p.finished, true, "thirty-one finishes empty hands")
 
 	p = PeggingScript.new({"a": _cards("a", [[3, C], [4, C]]), "b": _cards("b", [[5, D], [13, D]])}, "a")
@@ -105,11 +105,11 @@ func _initialize() -> void:
 	var run_b: Array[PlayingCard] = p.hands["b"]
 	_play(p, "a", run_a[0], "run 1")
 	_play(p, "b", run_b[0], "run 2")
-	_check(_total(_play(p, "a", run_a[0], "run 3")), 3, "run of three")
+	_check(_total(_play(p, "a", run_a[0], "run 3")), 15, "run of three")
 	_check(p.preview_points(run_b[0]), 0, "preview does not score")
 	_play(p, "b", run_b[0], "run 4")
-	_check(p.scores["a"], 3, "a run score")
-	_check(p.scores["b"], 1, "b last card after run")
+	_check(p.scores["a"], 15, "a run score")
+	_check(p.scores["b"], 5, "b last card after run")
 
 	p = PeggingScript.new({"a": _cards("a", [[13, C]]), "b": _cards("b", [[13, D]])}, "a")
 	p.count = 25

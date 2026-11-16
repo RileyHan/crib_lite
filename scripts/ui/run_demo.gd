@@ -79,7 +79,7 @@ func _build_sidebar() -> Control:
 	box.add_child(buttons)
 	sidebar_coins = _sidebar_stat("Winnings", Color("ffd54a"), box)
 	sidebar_ante = _sidebar_stat("Round", Color("f29a1f"), box)
-	sidebar_round = _sidebar_stat("Match", Color("f29a1f"), box)
+	sidebar_round = _sidebar_stat("Match Counter", Color("f29a1f"), box)
 	return panel
 
 
@@ -144,6 +144,10 @@ func _refresh() -> void:
 			owned.append("%s (%s)" % [relic.display_name, relic.description])
 		_add_label("Loadout: " + "; ".join(owned))
 	match run.phase:
+		RunState.Phase.STARTER_PEG:
+			_add_label("Choose your starting peg:")
+			for peg in run.starter_peg_offer:
+				_shop_button("%s [%s]\n%s" % [peg.display_name, _rarity_name(peg), peg.description], Color("2e9e4f"), _choose_starter_peg.bind(peg))
 		RunState.Phase.STARTER_PERK:
 			_add_label("Choose your free starter perk:")
 			for perk in run.starter_offer:
@@ -172,6 +176,8 @@ func _prompt_text() -> String:
 			return "Choose your next Blind"
 		RunState.Phase.SHOP:
 			return "Shop"
+		RunState.Phase.STARTER_PEG:
+			return "Pick a starting peg"
 		RunState.Phase.IN_ENCOUNTER:
 			return "Blind failed"
 		RunState.Phase.WON:
@@ -188,7 +194,7 @@ func _build_blinds() -> void:
 	options_box.add_child(row)
 	var available := run.available_encounters()
 	var colors := [Color("2a74c8"), Color("c8962a"), Color("a84aa8")]
-	var titles := ["Warm-up", "The Cut"]
+	var titles := ["The Deal", "The Cut"]
 	var stage_list: Array[EncounterData] = []
 	stage_list.append_array(run.regular_encounters)
 	stage_list.append(run.boss_encounter)
@@ -332,6 +338,12 @@ func _add_button(text: String, callback: Callable) -> Button:
 	button.pressed.connect(callback)
 	options_box.add_child(button)
 	return button
+
+
+func _choose_starter_peg(peg: PegData) -> void:
+	if run.choose_starter_peg(peg):
+		log_text += "Starting peg chosen: [b]%s[/b]\n" % peg.display_name
+	_refresh()
 
 
 func _choose_starter(perk: PerkData) -> void:

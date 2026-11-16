@@ -97,7 +97,7 @@ func _initialize() -> void:
 	var totals := {"easy": 0, "hard": 0}
 	var decks := {"easy": DeckScript.new("player"), "hard": DeckScript.new("opponent")}
 	var simulation_rng := _rng(2026)
-	for game in range(24):
+	for game in range(200):
 		var easy_is_player := game % 2 == 0
 		var player_ai := OpponentAI.new(easy if easy_is_player else hard, simulation_rng)
 		var opponent_ai := OpponentAI.new(hard if easy_is_player else easy, simulation_rng)
@@ -109,7 +109,7 @@ func _initialize() -> void:
 		totals["hard" if easy_is_player else "easy"] += round_state.scores["opponent"]
 		round_state.cleanup()
 		_check(decks["easy"].size() + decks["hard"].size(), 104, "simulated round returns every card")
-	print("Simulated 24 rounds: easy %d, hard %d" % [totals["easy"], totals["hard"]])
+	print("Simulated 200 rounds: easy %d, hard %d" % [totals["easy"], totals["hard"]])
 	_check(totals["hard"] > totals["easy"], true, "hard AI outscores easy AI")
 
 	if failures > 0:

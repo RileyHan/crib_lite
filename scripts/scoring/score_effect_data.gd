@@ -37,5 +37,5 @@ func matches_category(event_type: String) -> bool:
 	if category == "any":
 		return true
 	if category == "pair":
-		return event_type == "pair" or event_type == "three_of_a_kind" or event_type == "four_of_a_kind"
+		return event_type == "pair" or event_type == "two_pairs" or event_type == "three_of_a_kind" or event_type == "four_of_a_kind"
 	return category == event_type

@@ -16,6 +16,8 @@ func _new_run(seed_value: int = 1, run_config: RunConfig = null) -> RunState:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
 	var run := RunState.new(run_config if run_config != null else config, DeckScript.new("player"), DeckScript.new("opponent"), rng)
+	if run.phase == RunState.Phase.STARTER_PEG:
+		run.choose_starter_peg(run.starter_peg_offer[0])
 	if run.phase == RunState.Phase.STARTER_PERK:
 		run.choose_starter_perk(run.starter_offer[0])
 	return run
@@ -26,7 +28,7 @@ func _force_result(run: RunState, win: bool) -> void:
 	var encounter := run.current_encounter
 	while not encounter.is_finished():
 		var round_state := encounter.start_hand()
-		var points := 200 if win else 0
+		var points := 5000 if win else 0
 		round_state.scores = {"player": points, "opponent": 1}
 		round_state.phase = CribbageRound.Phase.DONE
 		encounter.finish_hand()

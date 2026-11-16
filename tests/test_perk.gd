@@ -127,7 +127,7 @@ func _test_pegging() -> void:
 	pegging.perks = _manager(["fives_alive", "pair_pressure"])
 	pegging.play("opponent", pegging.hands["opponent"][0])
 	var result := pegging.play("player", pegging.hands["player"][1])
-	_check(pegging.scores["player"], 3, "pair (2) plus Pair Pressure (+1)")
+	_check(pegging.scores["player"], 11, "pair (10) plus Pair Pressure (+1)")
 	_check(_count_type(result["events"], "perk"), 1, "perk bonus appears in the play events")
 	_check(pegging.events_for("player").size(), 2, "perk bonus is part of the scoring log")
 	pegging.play("opponent", pegging.hands["opponent"][0])

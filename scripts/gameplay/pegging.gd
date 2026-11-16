@@ -110,22 +110,37 @@ static func score_play(sequence: Array[PlayingCard], total: int) -> Array[Dictio
 	if sequence.is_empty():
 		return events
 	if total == 15:
-		events.append(_event("fifteen", 2, sequence, "Fifteen"))
+		events.append(_event("fifteen", Scoring.POINTS_FIFTEEN, sequence, "Fifteen"))
 	if total == MAX_COUNT:
-		events.append(_event("thirty_one", 2, sequence, "Thirty-one"))
+		events.append(_event("thirty_one", 10, sequence, "Thirty-one"))
 	var same := 1
 	var index := sequence.size() - 2
 	while index >= 0 and sequence[index].rank == sequence[-1].rank:
 		same += 1
 		index -= 1
 	if same >= 2:
-		events.append(_event("pair", same * (same - 1), _tail(sequence, same), _pair_name(same)))
+		events.append(_event("pair", _pair_points(same), _tail(sequence, same), _pair_name(same)))
 	for length in range(sequence.size(), 2, -1):
 		var tail := _tail(sequence, length)
 		if Scoring.is_run(tail):
-			events.append(_event("run", length, tail, "Run of %d" % length))
+			events.append(_event("run", _run_points(length), tail, "Run of %d" % length))
 			break
 	return events
+
+
+static func _pair_points(same: int) -> int:
+	match same:
+		2:
+			return Scoring.POINTS_PAIR
+		3:
+			return Scoring.POINTS_THREE_KIND
+	return Scoring.POINTS_FOUR_KIND
+
+
+static func _run_points(length: int) -> int:
+	if Scoring.RUN_POINTS.has(length):
+		return Scoring.RUN_POINTS[length]
+	return Scoring.RUN_POINTS[5] + (length - 5) * 10
 
 
 func _advance(mover: String) -> Array[Dictionary]:
@@ -139,7 +154,7 @@ func _advance(mover: String) -> Array[Dictionary]:
 		turn_id = other if not hands[other].is_empty() else mover
 		return events
 	if _all_empty():
-		var last_card := _event("last_card", 1, [pile.back()], "Last card")
+		var last_card := _event("last_card", 5, [pile.back()], "Last card")
 		_award(mover, last_card)
 		events.append(last_card)
 		events.append_array(_multiply(mover, [last_card]))
@@ -156,7 +171,7 @@ func _advance(mover: String) -> Array[Dictionary]:
 	if can_play(mover):
 		turn_id = mover
 		return events
-	var go := _event("go", 1, [pile.back()], "Go")
+	var go := _event("go", 5, [pile.back()], "Go")
 	_award(mover, go)
 	events.append(go)
 	events.append_array(_multiply(mover, [go]))

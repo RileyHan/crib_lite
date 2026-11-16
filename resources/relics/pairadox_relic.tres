@@ -7,6 +7,7 @@
 script = ExtResource("2_eff")
 kind = 2
 value = 2.0
+max_activations = 2
 category = "pair"
 
 [resource]

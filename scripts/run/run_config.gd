@@ -28,8 +28,12 @@ extends Resource
 @export var chips_mult := false
 # Multiplies encounter targets in Chips x Mult mode, where head starts are disabled.
 @export var score_scale := 1
+# Chips x Mult mode: extra compounding target growth per stage (0.3 = +30% per stage), on top of target_growth.
+@export var target_growth_pct := 0.0
 @export var starting_pegs: Array[PegData] = []
 @export var starting_relics: Array[RelicData] = []
+# In Chips x Mult mode the player picks one of this many starting pegs (Common/Uncommon from the peg pool).
+@export var starter_peg_choices := 3
 # Pegs and relics the Chips x Mult shop can sell.
 @export var peg_pool: Array[PegData] = []
 @export var relic_pool: Array[RelicData] = []
@@ -48,6 +52,19 @@ func starter_offer(rng: RandomNumberGenerator) -> Array[PerkData]:
 		if perk.starter:
 			candidates.append(perk)
 	while offer.size() < starter_choices and not candidates.is_empty():
+		offer.append(candidates.pop_at(rng.randi_range(0, candidates.size() - 1)))
+	return offer
+
+
+func starter_peg_offer(rng: RandomNumberGenerator) -> Array[PegData]:
+	var offer: Array[PegData] = []
+	if not chips_mult or starter_peg_choices <= 0:
+		return offer
+	var candidates: Array[PegData] = []
+	for peg in peg_pool:
+		if peg.rarity <= PegData.Rarity.UNCOMMON and not starting_pegs.has(peg):
+			candidates.append(peg)
+	while offer.size() < starter_peg_choices and not candidates.is_empty():
 		offer.append(candidates.pop_at(rng.randi_range(0, candidates.size() - 1)))
 	return offer
 
@@ -82,7 +99,7 @@ func _scaled(template: EncounterData, stage_index: int, tier_offset: int) -> Enc
 	data.difficulty = template.difficulty + stage_index
 	data.player_head_start = maxi(0, template.player_head_start - head_start_decay * stage_index)
 	if chips_mult:
-		data.target_score *= maxi(score_scale, 1)
+		data.target_score = roundi(float(data.target_score) * pow(1.0 + target_growth_pct, stage_index)) * maxi(score_scale, 1)
 		data.player_head_start = 0
 	var profile := profile_for_stage(stage_index, tier_offset)
 	if profile != null:

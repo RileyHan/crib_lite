@@ -45,10 +45,15 @@ func _test_loadout() -> void:
 	var loadout := _loadout(["fifteen_peg"])
 	var events := [{"type": "fifteen", "points": 2, "cards": [], "description": ""}]
 	var bonus := loadout.bonus_event(events, "hand")
-	_check(bonus["points"], 6, "2 chips x 4 mult = 8, so +6")
+	_check(bonus["points"], 2, "2 chips x 2 mult = 4, so +2")
 	_check(bonus["type"], "chips_mult", "bonus event type")
-	_check(bonus["description"], "Points x Multi: 2 x 4 = 8", "bonus description")
-	_check(loadout.bonus_event([{"type": "pair", "points": 2, "cards": [], "description": ""}], "hand").is_empty(), true, "non-matching event adds nothing")
+	_check(bonus["description"], "Points x Multi: 2 x 2 = 4", "bonus description")
+	var pair := [{"type": "pair", "points": 2, "cards": [], "description": ""}]
+	var carried := loadout.bonus_event(pair, "hand")
+	_check(carried["points"], 2, "the earlier multi carries but points do not: 2 x 2 = 4, so +2")
+	_check(loadout.hand_total(), 8, "hand total adds each moment: 4 + 4")
+	loadout.begin_hand()
+	_check(loadout.bonus_event(pair, "hand").is_empty(), true, "new hand: non-matching event adds nothing")
 
 
 func _test_pegging() -> void:
@@ -59,13 +64,13 @@ func _test_pegging() -> void:
 	var five: PlayingCard = pegging.hands["player"][0]
 	pegging.play("opponent", ten)
 	var result := pegging.play("player", five)
-	_check(pegging.scores["player"], 8, "player's fifteen scores 8 with the Fifteen Peg")
+	_check(pegging.scores["player"], 10, "player's fifteen scores 10 with the Fifteen Peg")
 	_check(pegging.scores["opponent"], 0, "opponent unaffected")
 	_check(result["events"].size(), 2, "fifteen plus chips_mult bonus")
 	var plain := Pegging.new({"player": _cards("player", [5, 9]), "opponent": _cards("opponent", [10, 8])}, "opponent")
 	plain.play("opponent", plain.hands["opponent"][0])
 	plain.play("player", plain.hands["player"][0])
-	_check(plain.scores["player"], 2, "no loadout: plain 2 points")
+	_check(plain.scores["player"], 5, "no loadout: plain 5 points")
 
 
 func _test_round_and_encounter() -> void:
@@ -109,10 +114,14 @@ func _test_run() -> void:
 	var casual_target: int = stage["regular"][0].target_score
 	_check(casual_target % config.score_scale, 0, "targets scale by score_scale")
 	_check(casual_target >= 6 * 10, true, "scaled target is large")
+	var late_target: int = config.build_stage(9, rng)["boss"].target_score
+	_check(late_target > 2 * (40 + config.target_growth * 9) * config.score_scale, true, "late targets compound beyond linear growth")
 	_check(stage["regular"][0].player_head_start, 0, "no head start in chips x mult mode")
 	var run := RunState.new(config, DeckScript.new("player"), DeckScript.new("opponent"), rng)
 	_check(run.loadout != null, true, "run owns a loadout")
-	_check(run.loadout.pegs.size(), 3, "run starts with three pegs")
+	_check(run.loadout.pegs.size(), 0, "run starts with no pegs")
+	run.choose_starter_peg(run.starter_peg_offer[0])
+	_check(run.loadout.pegs.size(), 1, "run holds one chosen peg")
 	_check(run.starter_offer.is_empty(), true, "perks are retired in Chips x Mult")
 	var encounter := run.select_encounter(run.available_encounters()[0])
 	_check(encounter.loadout == run.loadout, true, "encounter uses the run loadout")

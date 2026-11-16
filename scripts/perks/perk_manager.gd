@@ -10,7 +10,7 @@ signal perk_removed(perk: PerkData)
 signal perk_triggered(perk: PerkData, points: int, trigger: PerkData.Trigger)
 signal multiplier_changed(total: int)
 
-const PAIR_TYPES: Array[String] = ["pair", "three_of_a_kind", "four_of_a_kind"]
+const PAIR_TYPES: Array[String] = ["pair", "two_pairs", "three_of_a_kind", "four_of_a_kind"]
 
 var owner_id: String = CribbageRound.PLAYER_ID
 var permanent: Array[PerkData] = []

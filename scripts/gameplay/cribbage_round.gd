@@ -90,6 +90,8 @@ func cut(_rng: RandomNumberGenerator = null, cut_index: int = -1) -> PlayingCard
 	pegging = Pegging.new({PLAYER_ID: hands[PLAYER_ID].cards, OPPONENT_ID: hands[OPPONENT_ID].cards}, nondealer_id())
 	pegging.perks = perks
 	pegging.loadout = loadout
+	if loadout != null:
+		loadout.begin_hand()
 	pegging.points_scored.connect(func(id: String, event: Dictionary) -> void: _bank(id, event["points"]))
 	if winner_id != "":
 		pegging.finished = true
