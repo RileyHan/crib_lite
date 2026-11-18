@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_mamos"]
+[ext_resource type="Script" path="res://scripts/scoring/relic_data.gd" id="2_qnf32"]
+
+[resource]
+script = ExtResource("2_qnf32")
+id = "rel_008"
+display_name = "Nest Egg"
+description = "Begin each run with +20 currency."
+rarity = 0
+base_price = 5
+hook = "start_currency"
+amount = 20

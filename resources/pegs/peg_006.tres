@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_pj66l"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_nhha4"]
+
+[sub_resource type="Resource" id="Resource_cjq0k"]
+script = ExtResource("1_pj66l")
+value = 5.0
+category = "fifteen"
+event_keys = PackedStringArray()
+every_nth = 2
+hand_counter = true
+
+[resource]
+script = ExtResource("2_nhha4")
+id = "peg_006"
+display_name = "Fifteen Fever"
+description = "+5 Mult on every 2nd fifteen in the hand."
+rarity = 1
+base_price = 7
+effects = Array[ExtResource("1_pj66l")]([SubResource("Resource_cjq0k")])

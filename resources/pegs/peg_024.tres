@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_6kp0n"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_bvuov"]
+
+[sub_resource type="Resource" id="Resource_1847a"]
+script = ExtResource("1_6kp0n")
+value = 5.0
+timing = 1
+category = "run"
+event_keys = PackedStringArray()
+hand_cond = "run_length"
+hand_min = 4
+
+[resource]
+script = ExtResource("2_bvuov")
+id = "peg_024"
+display_name = "Marathon"
+description = "+5 Mult once per hand if the hand has a run of 4 or more."
+base_price = 4
+effects = Array[ExtResource("1_6kp0n")]([SubResource("Resource_1847a")])

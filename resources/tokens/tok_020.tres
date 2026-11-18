@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TokenData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/token_data.gd" id="1_phcq3"]
+
+[resource]
+script = ExtResource("1_phcq3")
+id = "tok_020"
+display_name = "Clean Slate"
+description = "Remove one negative status effect. Not consumed if none apply."
+kind = "clean_slate"

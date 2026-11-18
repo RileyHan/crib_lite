@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_ils6k"]
+[ext_resource type="Script" path="res://scripts/scoring/relic_data.gd" id="2_jw6sk"]
+
+[resource]
+script = ExtResource("2_jw6sk")
+id = "rel_011"
+display_name = "Full House"
+description = "Begin each run with 1 additional standard card in your deck."
+hook = "deck_card"
+amount = 1

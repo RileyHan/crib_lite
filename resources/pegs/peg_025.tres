@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_okjvs"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_0saqj"]
+
+[sub_resource type="Resource" id="Resource_tbvpm"]
+script = ExtResource("1_okjvs")
+kind = 0
+value = 5.0
+category = "run"
+event_keys = PackedStringArray("double_run_3", "double_run_4", "double_double_run")
+
+[resource]
+script = ExtResource("2_0saqj")
+id = "peg_025"
+display_name = "Double Run"
+description = "+5 Points on a double run."
+rarity = 1
+base_price = 7
+effects = Array[ExtResource("1_okjvs")]([SubResource("Resource_tbvpm")])

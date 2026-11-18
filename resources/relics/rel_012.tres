@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_3b7un"]
+[ext_resource type="Script" path="res://scripts/scoring/relic_data.gd" id="2_kwtbx"]
+
+[resource]
+script = ExtResource("2_kwtbx")
+id = "rel_012"
+display_name = "Marked Deck"
+description = "Each encounter, reveal the next 3 cards of the draw pile and reorder them."
+rarity = 2
+base_price = 12
+hook = "peek_top"
+amount = 3

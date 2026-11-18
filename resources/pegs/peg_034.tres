@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_iye1u"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_63438"]
+
+[sub_resource type="Resource" id="Resource_uty78"]
+script = ExtResource("1_iye1u")
+kind = 0
+value = 10.0
+category = "flush"
+event_keys = PackedStringArray("five_flush")
+
+[resource]
+script = ExtResource("2_63438")
+id = "peg_034"
+display_name = "Royal Colours"
+description = "+10 Points on a five-card flush."
+base_price = 4
+effects = Array[ExtResource("1_iye1u")]([SubResource("Resource_uty78")])

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_hiwmc"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_3nibf"]
+
+[sub_resource type="Resource" id="Resource_pqw2q"]
+script = ExtResource("1_hiwmc")
+kind = 0
+category = "flush"
+event_keys = PackedStringArray()
+per = 5
+
+[resource]
+script = ExtResource("2_3nibf")
+id = "peg_040"
+display_name = "Royal Flush"
+description = "Per flush card: 2-5 +2, 6-9 +4, 10-K +6, Ace +8 Points."
+rarity = 3
+base_price = 16
+effects = Array[ExtResource("1_hiwmc")]([SubResource("Resource_pqw2q")])

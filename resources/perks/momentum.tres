@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PerkData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/perks/perk_data.gd" id="1_perk"]
+
+[resource]
+script = ExtResource("1_perk")
+id = "momentum"
+display_name = "Momentum"
+description = "Permanent multiplier: every run you score while pegging adds +1 to your score multiplier (max x5)."
+rarity = 1
+base_price = 8
+effect = 5
+trigger = 1
+event_type = "run"
+amount = 1
+max_bonus = 4

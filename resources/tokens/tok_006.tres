@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TokenData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/token_data.gd" id="1_qdcp4"]
+
+[resource]
+script = ExtResource("1_qdcp4")
+id = "tok_006"
+display_name = "Suit Swap"
+description = "Change one hand card's suit for this hand."
+rarity = 1
+base_price = 7
+kind = "suit_swap"

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_hcufj"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_wpfuf"]
+
+[sub_resource type="Resource" id="Resource_wijtc"]
+script = ExtResource("1_hcufj")
+kind = 0
+value = 3.0
+category = "pair"
+growth = 3.0
+event_keys = PackedStringArray()
+skip_first = true
+hand_counter = true
+
+[resource]
+script = ExtResource("2_wpfuf")
+id = "peg_017"
+display_name = "Pair Chain"
+description = "+3 Points per pair after the first, growing by +3 each time."
+rarity = 1
+base_price = 7
+effects = Array[ExtResource("1_hcufj")]([SubResource("Resource_wijtc")])

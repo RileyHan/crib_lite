@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_gm1rg"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_t8fig"]
+
+[sub_resource type="Resource" id="Resource_udts1"]
+script = ExtResource("1_gm1rg")
+kind = 0
+value = 5.0
+event_keys = PackedStringArray()
+flush_overlap = true
+
+[resource]
+script = ExtResource("2_t8fig")
+id = "peg_037"
+display_name = "Colour Theory"
+description = "+5 Points per combination that contains a flush card."
+rarity = 1
+base_price = 7
+effects = Array[ExtResource("1_gm1rg")]([SubResource("Resource_udts1")])

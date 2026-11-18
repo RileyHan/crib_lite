@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_sy851"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_06hqc"]
+
+[sub_resource type="Resource" id="Resource_b4wtf"]
+script = ExtResource("1_sy851")
+kind = 0
+value = 10.0
+category = "fifteen"
+max_activations = 1
+event_keys = PackedStringArray()
+hand_counter = true
+
+[resource]
+script = ExtResource("2_06hqc")
+id = "peg_007"
+display_name = "Double Fifteen"
+description = "+10 Points on the first fifteen each hand."
+rarity = 1
+base_price = 7
+effects = Array[ExtResource("1_sy851")]([SubResource("Resource_b4wtf")])

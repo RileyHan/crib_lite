@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TokenData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/token_data.gd" id="1_gq4ps"]
+
+[resource]
+script = ExtResource("1_gq4ps")
+id = "tok_016"
+display_name = "Insurance"
+description = "If you lose the next encounter, retry it free once instead of losing the run."
+rarity = 3
+base_price = 22
+kind = "insurance"

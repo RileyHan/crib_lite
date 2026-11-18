@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_ysh2o"]
+[ext_resource type="Script" path="res://scripts/scoring/relic_data.gd" id="2_wufnu"]
+
+[resource]
+script = ExtResource("2_wufnu")
+id = "rel_002"
+display_name = "Accountant Relic"
+description = "After each encounter, +1 currency per different combination type scored, up to +5."
+hook = "accountant"
+amount = 5

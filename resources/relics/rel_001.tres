@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_m7clj"]
+[ext_resource type="Script" path="res://scripts/scoring/relic_data.gd" id="2_tqx2f"]
+
+[sub_resource type="Resource" id="Resource_m7clj"]
+script = ExtResource("1_m7clj")
+kind = 0
+value = 10.0
+max_activations = 1
+label = "Dealer Card"
+event_keys = PackedStringArray()
+hand_counter = true
+require_mark = "relic_dealer"
+
+[resource]
+script = ExtResource("2_tqx2f")
+id = "rel_001"
+display_name = "Dealer Relic"
+description = "The first card you play in pegging each hand is your Dealer Card; the first scoring event it contributes to gets +10 Points (once per hand)."
+effects = Array[ExtResource("1_m7clj")]([SubResource("Resource_m7clj")])

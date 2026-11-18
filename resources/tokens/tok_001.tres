@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="TokenData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/token_data.gd" id="1_caf1h"]
+
+[resource]
+script = ExtResource("1_caf1h")
+id = "tok_001"
+display_name = "Reinforcement"
+description = "One card: +5 bonus Points the first time it contributes to scoring each hand (permanent)."
+base_price = 4
+kind = "reinforcement"

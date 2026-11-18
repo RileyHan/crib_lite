@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_687vn"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_tmy1l"]
+
+[sub_resource type="Resource" id="Resource_hyc3v"]
+script = ExtResource("1_687vn")
+value = 2.0
+category = "run"
+event_keys = PackedStringArray()
+per = 8
+
+[resource]
+script = ExtResource("2_tmy1l")
+id = "peg_027"
+display_name = "Stepping Stones"
+description = "+2 Mult per additional run."
+rarity = 1
+base_price = 7
+effects = Array[ExtResource("1_687vn")]([SubResource("Resource_hyc3v")])

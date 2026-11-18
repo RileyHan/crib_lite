@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="TokenData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/token_data.gd" id="1_a5axi"]
+
+[resource]
+script = ExtResource("1_a5axi")
+id = "tok_004"
+display_name = "Second Chance"
+description = "Discard one card from your hand and draw a replacement. Use while discarding."
+base_price = 4
+kind = "second_chance"

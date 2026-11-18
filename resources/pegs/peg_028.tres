@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_v7sjf"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_8nohx"]
+
+[sub_resource type="Resource" id="Resource_rfhfm"]
+script = ExtResource("1_v7sjf")
+kind = 0
+value = 10.0
+category = "run"
+chance = 0.2
+event_keys = PackedStringArray()
+per = 1
+
+[resource]
+script = ExtResource("2_8nohx")
+id = "peg_028"
+display_name = "Lucky Sequence"
+description = "20% chance of +10 Points per run."
+rarity = 2
+base_price = 11
+effects = Array[ExtResource("1_v7sjf")]([SubResource("Resource_rfhfm")])

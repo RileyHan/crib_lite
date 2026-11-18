@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_kyn84"]
+[ext_resource type="Script" path="res://scripts/scoring/relic_data.gd" id="2_42hco"]
+
+[resource]
+script = ExtResource("2_42hco")
+id = "rel_015"
+display_name = "Scholar's Eye"
+description = "Each hand, reveal 1 random card from the draw pile."
+rarity = 0
+base_price = 5
+hook = "scholars_eye"
+amount = 1

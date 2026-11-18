@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="PegData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="1_peg"]
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="2_eff"]
+
+[sub_resource type="Resource" id="Resource_a"]
+script = ExtResource("2_eff")
+kind = 1
+value = 1.0
+category = "run"
+growth = 1.0
+
+[resource]
+script = ExtResource("1_peg")
+id = "the_runner_peg"
+display_name = "The Runner"
+description = "+1 Multi for a run, and every run scored after it gets 1 more Multi."
+rarity = 2
+base_price = 12
+effects = Array[ExtResource("2_eff")]([SubResource("Resource_a")])

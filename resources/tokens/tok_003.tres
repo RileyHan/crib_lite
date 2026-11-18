@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TokenData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/token_data.gd" id="1_qmk3j"]
+
+[resource]
+script = ExtResource("1_qmk3j")
+id = "tok_003"
+display_name = "Mulligan"
+description = "Discard your hand and draw a completely new one. Use while discarding."
+rarity = 2
+base_price = 12
+kind = "mulligan"

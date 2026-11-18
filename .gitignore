@@ -1,0 +1,10 @@
+# Godot generated/imported data
+.godot/
+.import/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini

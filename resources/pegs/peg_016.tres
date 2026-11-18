@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_ncmk7"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_loxkt"]
+
+[sub_resource type="Resource" id="Resource_ybrn0"]
+script = ExtResource("1_ncmk7")
+value = 10.0
+category = "pair"
+event_keys = PackedStringArray("four_of_a_kind")
+
+[resource]
+script = ExtResource("2_loxkt")
+id = "peg_016"
+display_name = "Four's a Crowd"
+description = "+10 Mult per four-of-a-kind group."
+rarity = 1
+base_price = 7
+effects = Array[ExtResource("1_ncmk7")]([SubResource("Resource_ybrn0")])

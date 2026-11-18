@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EncounterData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/encounters/encounter_data.gd" id="1_data"]
+[ext_resource type="Resource" path="res://resources/opponents/ai_hard.tres" id="2_ai"]
+
+[resource]
+script = ExtResource("1_data")
+id = "boss"
+display_name = "The Shark"
+opponent_profile = ExtResource("2_ai")
+target_score = 55
+hand_limit = 4
+reward = 10
+difficulty = 3
+retry_cost = 5
+sudden_death_enabled = true

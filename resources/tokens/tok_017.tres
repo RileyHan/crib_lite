@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TokenData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/token_data.gd" id="1_2rhj1"]
+
+[resource]
+script = ExtResource("1_2rhj1")
+id = "tok_017"
+display_name = "Shop Voucher"
+description = "Your next shop purchase costs 25% less (minimum 1)."
+rarity = 1
+base_price = 7
+kind = "shop_voucher"

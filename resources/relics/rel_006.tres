@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_h6ycf"]
+[ext_resource type="Script" path="res://scripts/scoring/relic_data.gd" id="2_b60fq"]
+
+[resource]
+script = ExtResource("2_b60fq")
+id = "rel_006"
+display_name = "Open Table"
+description = "Draw 1 extra card each hand, then discard down to the normal hand (the extra discard leaves play)."
+hook = "extra_card"
+amount = 1

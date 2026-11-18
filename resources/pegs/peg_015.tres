@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_aj4gq"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_l87nc"]
+
+[sub_resource type="Resource" id="Resource_dld6b"]
+script = ExtResource("1_aj4gq")
+kind = 0
+value = 5.0
+category = "pair"
+event_keys = PackedStringArray("three_of_a_kind", "full_house")
+
+[resource]
+script = ExtResource("2_l87nc")
+id = "peg_015"
+display_name = "Three's Company"
+description = "+5 Points per three-of-a-kind group."
+rarity = 1
+base_price = 7
+effects = Array[ExtResource("1_aj4gq")]([SubResource("Resource_dld6b")])

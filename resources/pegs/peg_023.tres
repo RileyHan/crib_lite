@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_dm5hr"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_gy01k"]
+
+[sub_resource type="Resource" id="Resource_ktc5n"]
+script = ExtResource("1_dm5hr")
+kind = 0
+value = 10.0
+category = "run"
+event_keys = PackedStringArray("run_5")
+
+[resource]
+script = ExtResource("2_gy01k")
+id = "peg_023"
+display_name = "Consecutive"
+description = "+10 Points on a five-card run."
+base_price = 4
+effects = Array[ExtResource("1_dm5hr")]([SubResource("Resource_ktc5n")])

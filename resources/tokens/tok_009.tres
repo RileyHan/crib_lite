@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TokenData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/token_data.gd" id="1_hcb8y"]
+
+[resource]
+script = ExtResource("1_hcb8y")
+id = "tok_009"
+display_name = "Golden Edge"
+description = "One card: +5 bonus Points the first time it contributes to scoring each hand (permanent)."
+rarity = 1
+base_price = 8
+kind = "golden_edge"

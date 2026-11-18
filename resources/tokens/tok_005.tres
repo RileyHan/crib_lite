@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TokenData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/token_data.gd" id="1_2xy4x"]
+
+[resource]
+script = ExtResource("1_2xy4x")
+id = "tok_005"
+display_name = "Loaded Deck"
+description = "Choose a rank; swap one hand card for the next card of that rank in your draw pile. Not consumed if none remain."
+rarity = 2
+base_price = 11
+kind = "loaded_deck"

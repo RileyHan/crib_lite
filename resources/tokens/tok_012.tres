@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TokenData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/token_data.gd" id="1_ijmp2"]
+
+[resource]
+script = ExtResource("1_ijmp2")
+id = "tok_012"
+display_name = "Chromatic"
+description = "Give one card a second suit for flush calculations (permanent)."
+rarity = 3
+base_price = 20
+kind = "chromatic"

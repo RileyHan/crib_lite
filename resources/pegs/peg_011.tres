@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_gwoa8"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_r1hv8"]
+
+[sub_resource type="Resource" id="Resource_dpaj5"]
+script = ExtResource("1_gwoa8")
+value = 2.0
+category = "pair"
+event_keys = PackedStringArray()
+per = 1
+
+[resource]
+script = ExtResource("2_r1hv8")
+id = "peg_011"
+display_name = "Pair Peg"
+description = "+2 Mult per pair (three of a kind counts as 3 pairs, four as 6)."
+base_price = 4
+effects = Array[ExtResource("1_gwoa8")]([SubResource("Resource_dpaj5")])

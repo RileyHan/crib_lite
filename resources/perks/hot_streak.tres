@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PerkData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/perks/perk_data.gd" id="1_perk"]
+
+[resource]
+script = ExtResource("1_perk")
+id = "hot_streak"
+display_name = "Hot Streak"
+description = "Temporary (one encounter): each pegging play that scores earns +1, up to 2 per hand."
+rarity = 1
+base_price = 6
+duration = 1
+trigger = 1
+event_type = "any"
+per_event = false
+max_triggers_per_hand = 2

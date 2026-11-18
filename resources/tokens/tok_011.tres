@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TokenData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/token_data.gd" id="1_jvuup"]
+
+[resource]
+script = ExtResource("1_jvuup")
+id = "tok_011"
+display_name = "Inked"
+description = "Permanently change one card's rank."
+rarity = 2
+base_price = 13
+kind = "inked"

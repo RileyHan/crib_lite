@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_efr3k"]
+[ext_resource type="Script" path="res://scripts/scoring/relic_data.gd" id="2_dpt16"]
+
+[resource]
+script = ExtResource("2_dpt16")
+id = "rel_014"
+display_name = "Safety Net"
+description = "The first encounter loss of a run is retried for free, once."
+rarity = 3
+base_price = 18
+hook = "protection"
+amount = 1

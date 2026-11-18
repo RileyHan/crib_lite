@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_gg0m5"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_xyk8n"]
+
+[sub_resource type="Resource" id="Resource_7egif"]
+script = ExtResource("1_gg0m5")
+value = 5.0
+timing = 1
+event_keys = PackedStringArray()
+hand_cond = "base_points"
+hand_min = 30
+
+[resource]
+script = ExtResource("2_xyk8n")
+id = "peg_045"
+display_name = "High Roller"
+description = "+5 Mult if the hand's base score is 30 or more."
+rarity = 1
+base_price = 7
+effects = Array[ExtResource("1_gg0m5")]([SubResource("Resource_7egif")])

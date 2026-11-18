@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_xux2f"]
+[ext_resource type="Script" path="res://scripts/scoring/relic_data.gd" id="2_g4okh"]
+
+[resource]
+script = ExtResource("2_g4okh")
+id = "rel_009"
+display_name = "House Account"
+description = "+5 currency after winning each encounter."
+rarity = 2
+base_price = 12
+hook = "win_bonus"
+amount = 5

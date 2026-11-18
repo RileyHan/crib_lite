@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_ipbt6"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_oy8w5"]
+
+[sub_resource type="Resource" id="Resource_jkd3x"]
+script = ExtResource("1_ipbt6")
+kind = 0
+value = 0.0
+category = "run"
+event_keys = PackedStringArray()
+arms_flag = "momentum"
+
+[sub_resource type="Resource" id="Resource_bffp2"]
+script = ExtResource("1_ipbt6")
+kind = 0
+value = 5.0
+category = "run"
+max_activations = 1
+event_keys = PackedStringArray()
+hand_counter = true
+per = 2
+requires_flag = "momentum"
+
+[resource]
+script = ExtResource("2_oy8w5")
+id = "peg_029"
+display_name = "Momentum Run"
+description = "After scoring a run, the next hand's first run gets +5 Points per card."
+rarity = 2
+base_price = 11
+effects = Array[ExtResource("1_ipbt6")]([SubResource("Resource_jkd3x"), SubResource("Resource_bffp2")])

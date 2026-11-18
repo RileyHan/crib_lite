@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PerkData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/perks/perk_data.gd" id="1_perk"]
+
+[resource]
+script = ExtResource("1_perk")
+id = "head_start"
+display_name = "Head Start"
+description = "Start every hand with +1 point."
+base_price = 5
+starter = true
+trigger = 3
+per_event = false

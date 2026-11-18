@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TokenData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/token_data.gd" id="1_7iv63"]
+
+[resource]
+script = ExtResource("1_7iv63")
+id = "tok_019"
+display_name = "Lucky Break"
+description = "Reroll the shop's stock once for free. Use while in the shop."
+rarity = 1
+base_price = 8
+kind = "lucky_break"

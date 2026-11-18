@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_ma66n"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_u0ady"]
+
+[sub_resource type="Resource" id="Resource_h1bmh"]
+script = ExtResource("1_ma66n")
+kind = 0
+value = 5.0
+category = "flush"
+event_keys = PackedStringArray()
+per = 2
+
+[resource]
+script = ExtResource("2_u0ady")
+id = "peg_032"
+display_name = "Suit Collector"
+description = "+5 Points per flush card."
+base_price = 4
+effects = Array[ExtResource("1_ma66n")]([SubResource("Resource_h1bmh")])

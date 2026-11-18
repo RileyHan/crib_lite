@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_y3a5b"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_0um5b"]
+
+[sub_resource type="Resource" id="Resource_6s51n"]
+script = ExtResource("1_y3a5b")
+value = 5.0
+timing = 1
+category = "run"
+event_keys = PackedStringArray()
+hand_cond = "runs"
+hand_min = 2
+
+[resource]
+script = ExtResource("2_0um5b")
+id = "peg_026"
+display_name = "Run the Table"
+description = "+5 Mult once per hand if the hand has at least 2 distinct runs."
+rarity = 1
+base_price = 7
+effects = Array[ExtResource("1_y3a5b")]([SubResource("Resource_6s51n")])

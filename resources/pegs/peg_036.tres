@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_6k1rj"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_quh2n"]
+
+[sub_resource type="Resource" id="Resource_erygi"]
+script = ExtResource("1_6k1rj")
+kind = 0
+value = 3.0
+category = "flush"
+event_keys = PackedStringArray()
+streak_step = 3.0
+
+[resource]
+script = ExtResource("2_quh2n")
+id = "peg_036"
+display_name = "Suit Streak"
+description = "Flushes give +3 Points, growing by +3 for every consecutive hand that scored a flush."
+rarity = 1
+base_price = 7
+effects = Array[ExtResource("1_6k1rj")]([SubResource("Resource_erygi")])

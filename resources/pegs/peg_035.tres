@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_2u6ax"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_425kn"]
+
+[sub_resource type="Resource" id="Resource_rufa2"]
+script = ExtResource("1_2u6ax")
+value = 3.0
+category = "flush"
+max_activations = 2
+event_keys = PackedStringArray("five_flush")
+hand_counter = true
+
+[resource]
+script = ExtResource("2_425kn")
+id = "peg_035"
+display_name = "Full Spectrum"
+description = "+3 Mult on a five-card flush, up to +6 per hand."
+rarity = 1
+base_price = 7
+effects = Array[ExtResource("1_2u6ax")]([SubResource("Resource_rufa2")])

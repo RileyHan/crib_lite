@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_xryf7"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_8pe8x"]
+
+[sub_resource type="Resource" id="Resource_4gtol"]
+script = ExtResource("1_xryf7")
+value = 10.0
+timing = 1
+event_keys = PackedStringArray()
+hand_cond = "perfect"
+
+[resource]
+script = ExtResource("2_8pe8x")
+id = "peg_049"
+display_name = "Perfectionist"
+description = "+10 Mult if every card contributes and at least one contributes twice."
+rarity = 2
+base_price = 11
+effects = Array[ExtResource("1_xryf7")]([SubResource("Resource_4gtol")])

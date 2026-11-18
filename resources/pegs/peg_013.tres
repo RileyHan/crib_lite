@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_qxujh"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_ir4xf"]
+
+[sub_resource type="Resource" id="Resource_tx4ho"]
+script = ExtResource("1_qxujh")
+kind = 0
+value = 10.0
+category = "pair"
+event_keys = PackedStringArray()
+only_rank = 5
+per = 1
+
+[resource]
+script = ExtResource("2_ir4xf")
+id = "peg_013"
+display_name = "Twin Fives"
+description = "+10 Points per pair of 5s."
+base_price = 4
+effects = Array[ExtResource("1_qxujh")]([SubResource("Resource_tx4ho")])

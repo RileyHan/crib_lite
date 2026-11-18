@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="PegData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_qnk8m"]
+[ext_resource type="Script" path="res://scripts/scoring/peg_data.gd" id="2_pmuec"]
+
+[sub_resource type="Resource" id="Resource_chowc"]
+script = ExtResource("1_qnk8m")
+kind = 0
+value = 10.0
+category = "fifteen"
+event_keys = PackedStringArray()
+exact_cards = 2
+
+[resource]
+script = ExtResource("2_pmuec")
+id = "peg_004"
+display_name = "Perfect Fifteen"
+description = "+10 Points per two-card fifteen."
+base_price = 4
+effects = Array[ExtResource("1_qnk8m")]([SubResource("Resource_chowc")])

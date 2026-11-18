@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_g2tp2"]
+[ext_resource type="Script" path="res://scripts/scoring/relic_data.gd" id="2_3frng"]
+
+[sub_resource type="Resource" id="Resource_g2tp2"]
+script = ExtResource("1_g2tp2")
+kind = 0
+value = 5.0
+category = "pair"
+label = "Pairadox bank"
+event_keys = PackedStringArray()
+bank_pay_on = "other"
+bank_cap = 15.0
+
+[resource]
+script = ExtResource("2_3frng")
+id = "rel_005"
+display_name = "Pairadox Relic"
+description = "Each pair banks +5 Points (max 15), paid to the next non-pair event; resets each hand."
+rarity = 2
+base_price = 12
+effects = Array[ExtResource("1_g2tp2")]([SubResource("Resource_g2tp2")])

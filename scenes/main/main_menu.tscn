@@ -1,0 +1,61 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_menu"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Menu" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="CenterContainer/Menu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "SKUNKED"
+horizontal_alignment = 1
+
+[node name="Status" type="Label" parent="CenterContainer/Menu"]
+layout_mode = 2
+text = "Milestone 2: card and deck systems."
+horizontal_alignment = 1
+
+[node name="NewRunButton" type="Button" parent="CenterContainer/Menu"]
+layout_mode = 2
+disabled = true
+text = "New Run (Coming Soon)"
+
+[node name="CardDemoButton" type="Button" parent="CenterContainer/Menu"]
+layout_mode = 2
+text = "Card and Deck Demo"
+
+[node name="RoundDemoButton" type="Button" parent="CenterContainer/Menu"]
+layout_mode = 2
+text = "Play Cribbage Round (Milestone 3)"
+
+[node name="RunDemoButton" type="Button" parent="CenterContainer/Menu"]
+layout_mode = 2
+text = "Run Map (Milestone 7)"
+
+[node name="QuitButton" type="Button" parent="CenterContainer/Menu"]
+layout_mode = 2
+text = "Quit"
+
+[connection signal="pressed" from="CenterContainer/Menu/CardDemoButton" to="." method="_on_card_demo_button_pressed"]
+[connection signal="pressed" from="CenterContainer/Menu/RoundDemoButton" to="." method="_on_round_demo_button_pressed"]
+[connection signal="pressed" from="CenterContainer/Menu/RunDemoButton" to="." method="_on_run_demo_button_pressed"]
+[connection signal="pressed" from="CenterContainer/Menu/QuitButton" to="." method="_on_quit_button_pressed"]

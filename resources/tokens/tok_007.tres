@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TokenData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/token_data.gd" id="1_886xk"]
+
+[resource]
+script = ExtResource("1_886xk")
+id = "tok_007"
+display_name = "The Cut"
+description = "Replace the starter card with the next card of the dealer's deck. Once per hand, before any play."
+rarity = 1
+base_price = 8
+kind = "the_cut"

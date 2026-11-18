@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/scoring/score_effect_data.gd" id="1_lg75m"]
+[ext_resource type="Script" path="res://scripts/scoring/relic_data.gd" id="2_uqitu"]
+
+[sub_resource type="Resource" id="Resource_lg75m"]
+script = ExtResource("1_lg75m")
+kind = 0
+value = 10.0
+category = "run"
+label = "Runner queue"
+event_keys = PackedStringArray()
+bank_pay_on = "any"
+bank_cap = 20.0
+bank_pay_step = 10.0
+
+[resource]
+script = ExtResource("2_uqitu")
+id = "rel_004"
+display_name = "Runner Relic"
+description = "When a run scores, queue +10 Points for the next scoring event (queue of 2; one used per event; resets each hand)."
+rarity = 2
+base_price = 12
+effects = Array[ExtResource("1_lg75m")]([SubResource("Resource_lg75m")])
