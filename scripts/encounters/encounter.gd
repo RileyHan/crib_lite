@@ -48,7 +48,8 @@ func target_score() -> int:
 
 
 func hand_limit() -> int:
-	return maxi(1, data.hand_limit + (perks.hand_limit_delta() if perks != null else 0))
+	var relic_hands := loadout.hook_amount("extra_hand") if loadout != null else 0
+	return maxi(1, data.hand_limit + (perks.hand_limit_delta() if perks != null else 0) + relic_hands)
 
 
 func is_finished() -> bool:

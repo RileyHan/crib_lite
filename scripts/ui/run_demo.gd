@@ -144,8 +144,11 @@ func _refresh() -> void:
 			owned.append("%s (%s)" % [relic.display_name, relic.description])
 		_add_label("Loadout: " + "; ".join(owned))
 	match run.phase:
+		RunState.Phase.STARTER_RELIC:
+			_add_label("Choose your relic. You keep it for the whole run and cannot sell or replace it:")
+			for relic in run.starter_relic_offer:
+				_shop_button("%s [%s]\n%s" % [relic.display_name, _rarity_name(relic), relic.description], Color("8a5cc8"), _choose_starter_relic.bind(relic))
 		RunState.Phase.STARTER_PEG:
-			_add_label("Choose your starting peg:")
 			for peg in run.starter_peg_offer:
 				_shop_button("%s [%s]\n%s" % [peg.display_name, _rarity_name(peg), peg.description], Color("2e9e4f"), _choose_starter_peg.bind(peg))
 		RunState.Phase.STARTER_PERK:
@@ -176,6 +179,8 @@ func _prompt_text() -> String:
 			return "Choose your next Blind"
 		RunState.Phase.SHOP:
 			return "Shop"
+		RunState.Phase.STARTER_RELIC:
+			return "Pick your relic"
 		RunState.Phase.STARTER_PEG:
 			return "Pick a starting peg"
 		RunState.Phase.IN_ENCOUNTER:
@@ -285,7 +290,6 @@ func _build_shop() -> void:
 	_shop_button("Reroll offers ($%d)" % shop.reroll_cost(), Color("d4a017"), _reroll).disabled = not shop.can_reroll()
 	var owned: Array[Resource] = []
 	owned.append_array(run.loadout.pegs)
-	owned.append_array(run.loadout.relics)
 	for item in owned:
 		var text := "Sell %s: %s  -  +$%d" % [UpgradeShop.kind_of(item), item.display_name, shop.sell_price_of(item)]
 		_shop_button(text, Color("e07b1a"), _sell.bind(item)).disabled = not shop.can_sell(item)
@@ -338,6 +342,12 @@ func _add_button(text: String, callback: Callable) -> Button:
 	button.pressed.connect(callback)
 	options_box.add_child(button)
 	return button
+
+
+func _choose_starter_relic(relic: RelicData) -> void:
+	if run.choose_starter_relic(relic):
+		log_text += "Relic chosen: [b]%s[/b]\n" % relic.display_name
+	_refresh()
 
 
 func _choose_starter_peg(peg: PegData) -> void:

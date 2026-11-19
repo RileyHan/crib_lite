@@ -21,7 +21,7 @@ static func all() -> Array[RelicData]:
 	relics.append(_relic(8, "Nest Egg", 0, "Begin each run with +20 currency.", [], "start_currency", 20))
 	relics.append(_relic(9, "House Account", 2, "+5 currency after winning each encounter.", [], "win_bonus", 5))
 	relics.append(_relic(10, "First-Class Ticket", 1, "The first purchase in each shop is 20% cheaper (rounded down, minimum 1).", [], "first_discount", 20))
-	relics.append(_relic(11, "Full House", 1, "Begin each run with 1 additional standard card in your deck.", [], "deck_card", 1))
+	relics.append(_relic(11, "Please Try Again", 1, "Grants 1 additional hand for each match during the run. The extra hand resets each match and does not accumulate.", [], "extra_hand", 1))
 	relics.append(_relic(12, "Marked Deck", 2, "Each encounter, reveal the next 3 cards of the draw pile and reorder them.", [], "peek_top", 3))
 	relics.append(_relic(13, "Lucky Dealer", 2, "Each encounter, the starter card is drawn twice: keep one, the other goes to the bottom of the pile.", [], "lucky_dealer", 1))
 	relics.append(_relic(14, "Safety Net", 3, "The first encounter loss of a run is retried for free, once.", [], "protection", 1))

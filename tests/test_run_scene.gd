@@ -38,6 +38,8 @@ func _initialize() -> void:
 	while not scene.run.is_over() and guard < 60:
 		guard += 1
 		match scene.run.phase:
+			RunState.Phase.STARTER_RELIC:
+				scene._choose_starter_relic(scene.run.starter_relic_offer[0])
 			RunState.Phase.STARTER_PEG:
 				scene._choose_starter_peg(scene.run.starter_peg_offer[0])
 			RunState.Phase.STARTER_PERK:

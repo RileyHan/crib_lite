@@ -16,7 +16,7 @@ func _shop_run(seed_value: int, currency: int) -> RunState:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
 	var run := RunState.new(config, DeckScript.new("player"), DeckScript.new("opponent"), rng)
-	run.choose_starter_peg(run.starter_peg_offer[0])
+	run.choose_starter_relic(run.starter_relic_offer[0])
 	for i in range(2):
 		run.select_encounter(run.available_encounters()[0] if i == 0 else run.boss_encounter)
 		var encounter := run.current_encounter
@@ -32,14 +32,11 @@ func _shop_run(seed_value: int, currency: int) -> RunState:
 
 func _initialize() -> void:
 	var fresh := RunState.new(config, DeckScript.new("player"), DeckScript.new("opponent"))
-	_check(fresh.phase, RunState.Phase.STARTER_PEG, "run begins with the starting peg pick")
-	_check(fresh.starter_peg_offer.size(), 3, "three starting pegs offered")
-	for peg in fresh.starter_peg_offer:
-		_check(peg.rarity <= PegData.Rarity.UNCOMMON, true, "%s is a modest starting peg" % peg.id)
-	_check(fresh.choose_starter_peg(config.peg_pool[0] if not fresh.starter_peg_offer.has(config.peg_pool[0]) else null), false, "cannot pick an unoffered peg")
-	var picked := fresh.starter_peg_offer[0]
-	_check(fresh.choose_starter_peg(picked), true, "pick an offered peg")
-	_check(fresh.loadout.pegs, [picked], "loadout holds only the chosen peg")
+	_check(fresh.phase, RunState.Phase.STARTER_RELIC, "run begins with the relic pick")
+	_check(fresh.starter_relic_offer.size(), 5, "five relics offered")
+	var picked := fresh.starter_relic_offer[0]
+	_check(fresh.choose_starter_relic(picked), true, "pick an offered relic")
+	_check(fresh.loadout.relics, [picked], "loadout holds only the chosen relic")
 	_check(fresh.phase, RunState.Phase.SELECTING, "run proceeds to blind select")
 	var first := fresh.available_encounters()[0]
 	_check(fresh.can_skip(first), true, "a regular blind can be skipped")

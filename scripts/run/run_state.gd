@@ -13,7 +13,7 @@ signal perk_gained(perk: PerkData)
 signal shop_opened(shop: Shop)
 signal upgrade_shop_opened(shop: UpgradeShop)
 
-enum Phase { SELECTING, IN_ENCOUNTER, SHOP, WON, LOST, STARTER_PERK, STARTER_PEG }
+enum Phase { SELECTING, IN_ENCOUNTER, SHOP, WON, LOST, STARTER_PERK, STARTER_PEG, STARTER_RELIC }
 
 var config: RunConfig
 var phase: Phase = Phase.SELECTING
@@ -23,6 +23,7 @@ var shop: Shop
 var upgrade_shop: UpgradeShop
 var starter_offer: Array[PerkData] = []
 var starter_peg_offer: Array[PegData] = []
+var starter_relic_offer: Array[RelicData] = []
 var stage_index := 0
 var currency := 0
 var encounters_won := 0
@@ -59,12 +60,28 @@ func _init(run_config: RunConfig, player: CardDeck, opponent: CardDeck, rng: Ran
 	perks.perk_added.connect(func(perk: PerkData) -> void: perk_gained.emit(perk))
 	starter_offer = config.starter_offer(_rng)
 	starter_peg_offer = config.starter_peg_offer(_rng)
-	if not starter_peg_offer.is_empty():
+	starter_relic_offer = config.starter_relic_offer(_rng)
+	if not starter_relic_offer.is_empty():
+		starter_peg_offer.clear()
+		phase = Phase.STARTER_RELIC
+	elif not starter_peg_offer.is_empty():
 		phase = Phase.STARTER_PEG
 	elif starter_offer.is_empty():
 		_begin_stage()
 	else:
 		phase = Phase.STARTER_PERK
+
+
+# Chips x Mult mode: takes the one relic kept for the whole run and begins the first stage.
+func choose_starter_relic(relic: RelicData) -> bool:
+	if phase != Phase.STARTER_RELIC or not starter_relic_offer.has(relic):
+		return false
+	loadout.add_relic(relic)
+	if relic.hook == "start_currency":
+		currency += relic.amount
+	starter_relic_offer.clear()
+	_begin_stage()
+	return true
 
 
 # Chips x Mult mode: takes the chosen starting peg and begins the first stage.
@@ -263,7 +280,8 @@ func _clear_stage() -> void:
 func _open_shop() -> void:
 	var shop_config := config.shop_config if config.shop_config != null else ShopConfig.new()
 	if config.chips_mult:
-		upgrade_shop = UpgradeShop.new(shop_config, config.peg_pool, config.relic_pool, loadout, stage_number(), func() -> int: return currency, spend, func(amount: int) -> void: _add_currency(amount), _rng, config.token_pool)
+		upgrade_shop = UpgradeShop.new(shop_config, config.peg_pool, [] as Array[RelicData], loadout, stage_number(), func() -> int: return currency, spend, func(amount: int) -> void: _add_currency(amount), _rng, config.token_pool)
+		upgrade_shop.relics_sellable = false
 		upgrade_shop_opened.emit(upgrade_shop)
 		return
 	shop = Shop.new(shop_config, config.perk_pool, perks, stage_number(), func() -> int: return currency, spend, func(amount: int) -> void: _add_currency(amount), _rng)

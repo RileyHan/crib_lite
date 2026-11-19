@@ -34,7 +34,9 @@ extends Resource
 @export var starting_relics: Array[RelicData] = []
 # In Chips x Mult mode the player picks one of this many starting pegs (Common/Uncommon from the peg pool).
 @export var starter_peg_choices := 3
-# Pegs and relics the Chips x Mult shop can sell.
+# In Chips x Mult mode the player picks ONE relic from this many random relics before the run (0 = all).
+@export var starter_relic_choices := 5
+# Pegs the Chips x Mult shop can sell; relic_pool is only the starting-relic offer (relics are never sold in the shop).
 @export var peg_pool: Array[PegData] = []
 @export var relic_pool: Array[RelicData] = []
 @export var token_pool: Array[TokenData] = []
@@ -53,6 +55,18 @@ func starter_offer(rng: RandomNumberGenerator) -> Array[PerkData]:
 		if perk.starter:
 			candidates.append(perk)
 	while offer.size() < starter_choices and not candidates.is_empty():
+		offer.append(candidates.pop_at(rng.randi_range(0, candidates.size() - 1)))
+	return offer
+
+
+# Chips x Mult mode: the one relic the player keeps all run (no buying, selling or replacing). 0 offers every relic.
+func starter_relic_offer(rng: RandomNumberGenerator) -> Array[RelicData]:
+	var offer: Array[RelicData] = []
+	if not chips_mult or not starting_relics.is_empty():
+		return offer
+	var candidates: Array[RelicData] = relic_pool.duplicate()
+	var count := candidates.size() if starter_relic_choices <= 0 else starter_relic_choices
+	while offer.size() < count and not candidates.is_empty():
 		offer.append(candidates.pop_at(rng.randi_range(0, candidates.size() - 1)))
 	return offer
 

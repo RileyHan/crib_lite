@@ -13,6 +13,8 @@ var config: ShopConfig
 var stage_number := 1
 var offers: Array[Resource] = []
 var reroll_count := 0
+# False in a real run: the single starting relic can never be sold.
+var relics_sellable := true
 var _pool: Array[Resource] = []
 var _loadout: ScoreLoadout
 var _funds: Callable
@@ -96,6 +98,8 @@ func buy(item: Resource) -> bool:
 
 
 func can_sell(item: Resource) -> bool:
+	if item is RelicData and not relics_sellable:
+		return false
 	return config.sell_ratio > 0.0 and not item is TokenData and owns(item)
 
 

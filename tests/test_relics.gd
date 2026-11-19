@@ -42,6 +42,29 @@ func _initialize() -> void:
 	_check(deck.add_card(7, PlayingCard.Suit.HEARTS).rank, 7, "deck add_card")
 	_check(deck.size(), 53, "deck grows")
 
+	_check(_relic(11).display_name, "Please Try Again", "REL-011 is Please Try Again")
+	var hand_data := EncounterData.new()
+	hand_data.hand_limit = 3
+	var try_encounter := Encounter.new(hand_data, CardDeck.new("player"), CardDeck.new("opponent"))
+	try_encounter.loadout = ScoreLoadout.new("player", RandomNumberGenerator.new())
+	_check(try_encounter.hand_limit(), 3, "no relic, normal hand limit")
+	try_encounter.loadout.add_relic(_relic(11))
+	_check(try_encounter.hand_limit(), 4, "Please Try Again adds 1 hand per match")
+
+	var pick_run := RunState.new(config, CardDeck.new("player"), CardDeck.new("opponent"))
+	_check(pick_run.phase, RunState.Phase.STARTER_RELIC, "run starts with the relic pick")
+	var offered := pick_run.starter_relic_offer[0]
+	_check(pick_run.choose_starter_relic(offered), true, "relic chosen")
+	_check(pick_run.choose_starter_relic(offered), false, "only one relic")
+	pick_run.upgrade_shop = null
+	pick_run._open_shop()
+	_check(pick_run.upgrade_shop.can_sell(offered), false, "the relic cannot be sold")
+	var relic_offers := 0
+	for offer in pick_run.upgrade_shop.offers:
+		if offer is RelicData:
+			relic_offers += 1
+	_check(relic_offers, 0, "the shop never sells relics")
+
 	var run_loadout := ScoreLoadout.new("player", RandomNumberGenerator.new())
 	run_loadout.add_relic(_relic(1))
 	var card := PlayingCard.new(4, PlayingCard.Suit.CLUBS, "player")

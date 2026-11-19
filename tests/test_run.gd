@@ -16,6 +16,8 @@ func _new_run(seed_value: int = 1, run_config: RunConfig = null) -> RunState:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
 	var run := RunState.new(run_config if run_config != null else config, DeckScript.new("player"), DeckScript.new("opponent"), rng)
+	if run.phase == RunState.Phase.STARTER_RELIC:
+		run.choose_starter_relic(run.starter_relic_offer[0])
 	if run.phase == RunState.Phase.STARTER_PEG:
 		run.choose_starter_peg(run.starter_peg_offer[0])
 	if run.phase == RunState.Phase.STARTER_PERK:

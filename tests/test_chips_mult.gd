@@ -120,7 +120,7 @@ func _test_run() -> void:
 	var run := RunState.new(config, DeckScript.new("player"), DeckScript.new("opponent"), rng)
 	_check(run.loadout != null, true, "run owns a loadout")
 	_check(run.loadout.pegs.size(), 0, "run starts with no pegs")
-	run.choose_starter_peg(run.starter_peg_offer[0])
+	run.choose_starter_relic(run.starter_relic_offer[0])
 	_check(run.loadout.pegs.size(), 1, "run holds one chosen peg")
 	_check(run.starter_offer.is_empty(), true, "perks are retired in Chips x Mult")
 	var encounter := run.select_encounter(run.available_encounters()[0])

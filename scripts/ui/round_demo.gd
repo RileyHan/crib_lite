@@ -155,6 +155,15 @@ func _animate_breakdown(breakdown: Dictionary) -> void:
 	await _pause(0.7)
 
 
+# Plain cribbage points (no peg or relic bonus) still show in the Points x Multi box.
+func _show_plain_points(title: String, points: int) -> void:
+	if points <= 0:
+		return
+	_set_points_multi(points, 1.0)
+	sb_total.text = "%s: %d" % [title, points]
+	await _pause(0.6)
+
+
 func _build_banner() -> void:
 	banner = Label.new()
 	banner.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -355,6 +364,15 @@ func _play_card(id: String, card: PlayingCard) -> void:
 	_log("%s plays %s (count %d)" % [_tag(id), Scoring.card_text(card), new_count])
 	var banners: Array[String] = []
 	var breakdowns: Array[Dictionary] = []
+	var plain_points := 0
+	var plain_title := ""
+	var has_breakdown := false
+	for event in result["events"]:
+		if event["type"] == "chips_mult":
+			has_breakdown = true
+		elif event["points"] > 0 and event["type"] != "go_said":
+			plain_points += event["points"]
+			plain_title = event["description"] if plain_title == "" else "Pegging"
 	for event in result["events"]:
 		if event["type"] == "go_said":
 			_log("   %s" % event["description"])
@@ -382,7 +400,9 @@ func _play_card(id: String, card: PlayingCard) -> void:
 		await _show_banner(text, 1.5)
 	for breakdown in breakdowns:
 		await _animate_breakdown(breakdown)
-	if banners.is_empty() and breakdowns.is_empty():
+	if not has_breakdown and _chips_mult_mode() and id == CribbageRound.PLAYER_ID:
+		await _show_plain_points(plain_title, plain_points)
+	if banners.is_empty() and breakdowns.is_empty() and plain_points == 0:
 		await _pause(0.5)
 	elif count_reset:
 		await _pause(0.4)
@@ -547,6 +567,12 @@ func _log_show(results: Array[Dictionary]) -> void:
 			continue
 		var result: Dictionary = entry["result"]
 		_log("[b]%s: %d[/b]" % [label, result["total"]])
+		var shown_breakdown := false
+		for event in result["events"]:
+			if event["type"] == "chips_mult":
+				shown_breakdown = true
+		if not shown_breakdown and _chips_mult_mode() and entry["owner_id"] == CribbageRound.PLAYER_ID:
+			await _show_plain_points(label, int(result["total"]))
 		for event in result["events"]:
 			if event["type"] == "chips_mult":
 				_log_breakdown(event["breakdown"], "   ")

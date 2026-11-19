@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource("2_jw6sk")
 id = "rel_011"
-display_name = "Full House"
-description = "Begin each run with 1 additional standard card in your deck."
-hook = "deck_card"
+display_name = "Please Try Again"
+description = "Grants 1 additional hand for each match during the run. The extra hand resets each match and does not accumulate."
+hook = "extra_hand"
 amount = 1
