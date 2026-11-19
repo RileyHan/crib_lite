@@ -156,12 +156,12 @@ func _animate_breakdown(breakdown: Dictionary) -> void:
 
 
 # Plain cribbage points (no peg or relic bonus) still show in the Points x Multi box.
-func _show_plain_points(title: String, points: int) -> void:
-	if points <= 0:
+func _show_plain_points(title: String, points: int, allow_zero := false) -> void:
+	if points <= 0 and not allow_zero:
 		return
 	_set_points_multi(points, 1.0)
 	sb_total.text = "%s: %d" % [title, points]
-	await _pause(0.6)
+	await _pause(0.8)
 
 
 func _build_banner() -> void:
@@ -561,18 +561,31 @@ func _clear_cut_row() -> void:
 
 func _log_show(results: Array[Dictionary]) -> void:
 	_log("[b]- Show -[/b]")
+	var chips_mult := _chips_mult_mode()
 	for entry in results:
 		var label: String = entry["label"]
-		if label.begins_with("Pegging") or label.begins_with("His Heels"):
+		if label.begins_with("His Heels"):
 			continue
 		var result: Dictionary = entry["result"]
+		var mine: bool = entry["owner_id"] == CribbageRound.PLAYER_ID
+		var who := "Your" if mine else "Opponent's"
+		var title := "%s %s" % [who, "pegging" if label.begins_with("Pegging") else ("crib" if label.begins_with("Crib") else "hand")]
+		if label.begins_with("Pegging"):
+			# Pegging was already logged and animated live; recap its total so all three scores are shown.
+			if chips_mult:
+				await _show_plain_points(title, int(result["total"]), true)
+			continue
 		_log("[b]%s: %d[/b]" % [label, result["total"]])
 		var shown_breakdown := false
 		for event in result["events"]:
 			if event["type"] == "chips_mult":
 				shown_breakdown = true
-		if not shown_breakdown and _chips_mult_mode() and entry["owner_id"] == CribbageRound.PLAYER_ID:
-			await _show_plain_points(label, int(result["total"]))
+		if chips_mult:
+			if shown_breakdown:
+				sb_total.text = title
+				await _pause(0.5)
+			else:
+				await _show_plain_points(title, int(result["total"]), true)
 		for event in result["events"]:
 			if event["type"] == "chips_mult":
 				_log_breakdown(event["breakdown"], "   ")
