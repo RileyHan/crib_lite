@@ -16,7 +16,6 @@ func _shop_run(seed_value: int, currency: int) -> RunState:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
 	var run := RunState.new(config, DeckScript.new("player"), DeckScript.new("opponent"), rng)
-	run.choose_starter_relic(run.starter_relic_offer[0])
 	for i in range(2):
 		run.select_encounter(run.available_encounters()[0] if i == 0 else run.boss_encounter)
 		var encounter := run.current_encounter
@@ -32,12 +31,13 @@ func _shop_run(seed_value: int, currency: int) -> RunState:
 
 func _initialize() -> void:
 	var fresh := RunState.new(config, DeckScript.new("player"), DeckScript.new("opponent"))
-	_check(fresh.phase, RunState.Phase.STARTER_RELIC, "run begins with the relic pick")
-	_check(fresh.starter_relic_offer.size(), 5, "five relics offered")
-	var picked := fresh.starter_relic_offer[0]
-	_check(fresh.choose_starter_relic(picked), true, "pick an offered relic")
-	_check(fresh.loadout.relics, [picked], "loadout holds only the chosen relic")
-	_check(fresh.phase, RunState.Phase.SELECTING, "run proceeds to blind select")
+	_check(fresh.phase, RunState.Phase.SELECTING, "run starts directly at blind select with no starter picks")
+	_check(fresh.starter_relic_offer.is_empty(), true, "no starter relic offer")
+	_check(fresh.loadout.relics.size(), 1, "exactly one starting relic")
+	_check(fresh.loadout.relics[0].id, "rel_011", "the starting relic is Please Try Again")
+	_check(fresh.loadout.pegs.size(), 0, "no starting pegs")
+	_check(fresh.choose_starter_relic(config.relic_pool[0]), false, "starter relic cannot be chosen")
+	_check(fresh.loadout.relics.size(), 1, "still one relic")
 	var first := fresh.available_encounters()[0]
 	_check(fresh.can_skip(first), true, "a regular blind can be skipped")
 	_check(fresh.can_skip(fresh.boss_encounter), false, "the boss cannot be skipped")

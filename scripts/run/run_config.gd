@@ -34,11 +34,14 @@ extends Resource
 @export var starting_relics: Array[RelicData] = []
 # In Chips x Mult mode the player picks one of this many starting pegs (Common/Uncommon from the peg pool).
 @export var starter_peg_choices := 3
-# In Chips x Mult mode the player picks ONE relic from this many random relics before the run (0 = all).
-@export var starter_relic_choices := 5
-# Pegs the Chips x Mult shop can sell; relic_pool is only the starting-relic offer (relics are never sold in the shop).
+# Optional pre-run relic pick from this many random unlocked relics. 0 (default) = no pick: the run simply starts
+# with `starting_relics`.
+@export var starter_relic_choices := 0
+# Pegs the Chips x Mult shop can sell. relic_pool is the full relic catalog; only relics whose id is listed in
+# unlocked_relic_ids (besides starting_relics) may ever be offered. Progression grants unlocks by adding ids here.
 @export var peg_pool: Array[PegData] = []
 @export var relic_pool: Array[RelicData] = []
+@export var unlocked_relic_ids: Array[String] = []
 @export var token_pool: Array[TokenData] = []
 # Skipping a regular encounter counts it as cleared (so the boss can unlock) but pays only this much.
 @export var max_skips_per_stage := 1
@@ -59,13 +62,26 @@ func starter_offer(rng: RandomNumberGenerator) -> Array[PerkData]:
 	return offer
 
 
-# Chips x Mult mode: the one relic the player keeps all run (no buying, selling or replacing). 0 offers every relic.
+func is_relic_available(relic: RelicData) -> bool:
+	return unlocked_relic_ids.has(relic.id) or starting_relics.has(relic)
+
+
+# Relics the run may legitimately hand out beyond the starting relics.
+func unlocked_relics() -> Array[RelicData]:
+	var list: Array[RelicData] = []
+	for relic in relic_pool:
+		if unlocked_relic_ids.has(relic.id) and not starting_relics.has(relic):
+			list.append(relic)
+	return list
+
+
+# Optional pick among unlocked relics; empty unless starter_relic_choices > 0 and no starting relic is fixed.
 func starter_relic_offer(rng: RandomNumberGenerator) -> Array[RelicData]:
 	var offer: Array[RelicData] = []
-	if not chips_mult or not starting_relics.is_empty():
+	if not chips_mult or not starting_relics.is_empty() or starter_relic_choices <= 0:
 		return offer
-	var candidates: Array[RelicData] = relic_pool.duplicate()
-	var count := candidates.size() if starter_relic_choices <= 0 else starter_relic_choices
+	var candidates := unlocked_relics()
+	var count := starter_relic_choices
 	while offer.size() < count and not candidates.is_empty():
 		offer.append(candidates.pop_at(rng.randi_range(0, candidates.size() - 1)))
 	return offer

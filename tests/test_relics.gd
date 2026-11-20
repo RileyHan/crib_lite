@@ -52,10 +52,12 @@ func _initialize() -> void:
 	_check(try_encounter.hand_limit(), 4, "Please Try Again adds 1 hand per match")
 
 	var pick_run := RunState.new(config, CardDeck.new("player"), CardDeck.new("opponent"))
-	_check(pick_run.phase, RunState.Phase.STARTER_RELIC, "run starts with the relic pick")
-	var offered := pick_run.starter_relic_offer[0]
-	_check(pick_run.choose_starter_relic(offered), true, "relic chosen")
-	_check(pick_run.choose_starter_relic(offered), false, "only one relic")
+	_check(pick_run.phase, RunState.Phase.SELECTING, "run starts without a relic pick")
+	_check(pick_run.loadout.relics.size(), 1, "run starts with exactly one relic")
+	var offered := pick_run.loadout.relics[0]
+	_check(offered.id, "rel_011", "starting relic is Please Try Again")
+	_check(pick_run.choose_starter_relic(offered), false, "no relic can be picked")
+	_check(pick_run.loadout.relics.size(), 1, "relic is not duplicated")
 	pick_run.upgrade_shop = null
 	pick_run._open_shop()
 	_check(pick_run.upgrade_shop.can_sell(offered), false, "the relic cannot be sold")

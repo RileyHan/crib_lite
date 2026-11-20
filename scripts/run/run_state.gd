@@ -55,7 +55,8 @@ func _init(run_config: RunConfig, player: CardDeck, opponent: CardDeck, rng: Ran
 		for peg in config.starting_pegs:
 			loadout.add_peg(peg)
 		for relic in config.starting_relics:
-			loadout.add_relic(relic)
+			if not loadout.has_relic(relic.id):
+				loadout.add_relic(relic)
 		currency += loadout.start_currency_bonus()
 	perks.perk_added.connect(func(perk: PerkData) -> void: perk_gained.emit(perk))
 	starter_offer = config.starter_offer(_rng)
@@ -280,7 +281,7 @@ func _clear_stage() -> void:
 func _open_shop() -> void:
 	var shop_config := config.shop_config if config.shop_config != null else ShopConfig.new()
 	if config.chips_mult:
-		upgrade_shop = UpgradeShop.new(shop_config, config.peg_pool, [] as Array[RelicData], loadout, stage_number(), func() -> int: return currency, spend, func(amount: int) -> void: _add_currency(amount), _rng, config.token_pool)
+		upgrade_shop = UpgradeShop.new(shop_config, config.peg_pool, config.unlocked_relics(), loadout, stage_number(), func() -> int: return currency, spend, func(amount: int) -> void: _add_currency(amount), _rng, config.token_pool)
 		upgrade_shop.relics_sellable = false
 		upgrade_shop_opened.emit(upgrade_shop)
 		return
