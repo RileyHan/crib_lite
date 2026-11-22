@@ -30,6 +30,8 @@ extends Resource
 @export var score_scale := 1
 # Chips x Mult mode: extra compounding target growth per stage (0.3 = +30% per stage), on top of target_growth.
 @export var target_growth_pct := 0.0
+# Chips x Mult mode: multiplier applied to Stage 1 (index 0) targets only; later stages are unaffected.
+@export var first_stage_target_mult := 1.0
 @export var starting_pegs: Array[PegData] = []
 @export var starting_relics: Array[RelicData] = []
 # In Chips x Mult mode the player picks one of this many starting pegs (Common/Uncommon from the peg pool).
@@ -131,6 +133,8 @@ func _scaled(template: EncounterData, stage_index: int, tier_offset: int) -> Enc
 	data.player_head_start = maxi(0, template.player_head_start - head_start_decay * stage_index)
 	if chips_mult:
 		data.target_score = roundi(float(data.target_score) * pow(1.0 + target_growth_pct, stage_index)) * maxi(score_scale, 1)
+		if stage_index == 0:
+			data.target_score = roundi(float(data.target_score) * first_stage_target_mult)
 		data.player_head_start = 0
 	var profile := profile_for_stage(stage_index, tier_offset)
 	if profile != null:

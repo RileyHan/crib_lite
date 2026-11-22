@@ -112,7 +112,8 @@ func _test_run() -> void:
 	rng.seed = 5
 	var stage := config.build_stage(0, rng)
 	var casual_target: int = stage["regular"][0].target_score
-	_check(casual_target % config.score_scale, 0, "targets scale by score_scale")
+	var expected := roundi(float(stage["regular"][0].target_score) / config.first_stage_target_mult / config.score_scale)
+	_check(casual_target, roundi(float(expected * config.score_scale) * config.first_stage_target_mult), "stage 1 targets scale by score_scale and first_stage_target_mult")
 	_check(casual_target >= 6 * 10, true, "scaled target is large")
 	var late_target: int = config.build_stage(9, rng)["boss"].target_score
 	_check(late_target > 2 * (40 + config.target_growth * 9) * config.score_scale, true, "late targets compound beyond linear growth")
